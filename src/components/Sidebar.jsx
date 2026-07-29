@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Compass, BarChart3, Car, Settings, Calculator, Users, RefreshCw, WifiOff, CloudOff, Palette } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Compass, BookOpen, BarChart3, Car, Settings, Calculator, Users, RefreshCw, WifiOff, CloudOff, Palette } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { FEATURES } from '../config/features';
 import './Sidebar.css';
@@ -21,8 +21,11 @@ const Sidebar = ({ onClose }) => {
   }, []);
 
   const allMenuItems = [
+    { path: '/admin/dashboard', name: 'Dashboard', icon: <LayoutDashboard size={20} />, enabled: true },
+    { path: '/admin/calendar', name: 'Cal. Cabañas', icon: <CalendarDays size={20} />, enabled: true },
     { path: '/admin/cars-calendar', name: 'Cal. Vehículos', icon: <Car size={20} />, enabled: true },
     { path: '/admin/tours-calendar', name: 'Cal. Tours', icon: <Compass size={20} />, enabled: true },
+    { path: '/admin/reservations', name: 'Reservas Cabañas', icon: <BookOpen size={20} />, enabled: true },
     { path: '/admin/reports', name: 'Reportes', icon: <BarChart3 size={20} />, enabled: true },
     { path: '/admin/cars-settings', name: 'Flota Vehículos', icon: <Settings size={20} />, enabled: true },
     { path: '/admin/tours-settings', name: 'Conf. Tours', icon: <Settings size={20} />, enabled: true },

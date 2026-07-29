@@ -1,7 +1,38 @@
 -- SCRIPT DE CONFIGURACIÓN COMPLETA PARA SUPABASE
 -- Copia todo este código, ve a tu panel de Supabase > SQL Editor, pégalo y haz clic en "Run"
 
--- 1. Tabla de Vehículos (Arriendos)
+-- 1. Tabla de Cabañas
+CREATE TABLE IF NOT EXISTS public.cabins (
+    id text PRIMARY KEY,
+    name text NOT NULL,
+    type text DEFAULT 'standard',
+    "maxCapacity" integer DEFAULT 4,
+    color text DEFAULT '#2980b9'
+);
+
+-- 2. Tabla de Reservas de Cabañas
+CREATE TABLE IF NOT EXISTS public.reservations (
+    id text PRIMARY KEY,
+    "cabinId" text NOT NULL,
+    "clientName" text,
+    "clientPhone" text,
+    "startDate" text NOT NULL,
+    "endDate" text NOT NULL,
+    adults integer DEFAULT 1,
+    "childrenCount" integer DEFAULT 0,
+    "babiesCount" integer DEFAULT 0,
+    "flightIn" text,
+    "flightOut" text,
+    "isBlock" boolean DEFAULT false,
+    "totalCost" numeric DEFAULT 0,
+    "depositAmount" numeric DEFAULT 0,
+    "paymentMethod" text,
+    status text DEFAULT 'confirmed',
+    notes text,
+    created_at timestamp with time zone DEFAULT timezone('utc'::text, now())
+);
+
+-- 3. Tabla de Vehículos (Arriendos)
 CREATE TABLE IF NOT EXISTS public.cars (
     id text PRIMARY KEY,
     name text NOT NULL,

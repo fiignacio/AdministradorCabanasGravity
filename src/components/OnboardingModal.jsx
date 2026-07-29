@@ -13,7 +13,7 @@ const THEME_PRESETS = [
 ];
 
 export default function OnboardingModal() {
-  const { businessConfig, updateBusinessConfig } = useStore();
+  const { businessConfig, updateBusinessConfig, cabins, addCabin, updateCabin, deleteCabin } = useStore();
   const [step, setStep] = useState(1);
 
   // Form State
@@ -24,7 +24,7 @@ export default function OnboardingModal() {
   const [primaryColor, setPrimaryColor] = useState(businessConfig.primaryColor || '#2c4c3b');
 
   // Local cabins state for fast editing during onboarding
-  const [localCabins, setLocalCabins] = useState([
+  const [localCabins, setLocalCabins] = useState(cabins.length > 0 ? cabins : [
     { id: '1', name: 'Cabaña Grande', maxCapacity: 6, color: '#D35400' },
     { id: '2', name: 'Cabaña Pequeña', maxCapacity: 3, color: '#556B2F' },
     { id: '3', name: 'Cabaña Mediana 1', maxCapacity: 4, color: '#B8860B' }
@@ -53,13 +53,31 @@ export default function OnboardingModal() {
   };
 
   const handleFinish = () => {
+    // 1. Update business config & mark setup completed
     updateBusinessConfig({
-      businessName: businessName.trim() || 'Mi Administración',
+      businessName: businessName.trim() || 'Mi Complejo de Cabañas',
       administratorName: administratorName.trim() || 'Administrador',
       contactPhone: contactPhone.trim(),
       contactEmail: contactEmail.trim(),
       primaryColor,
       isSetupCompleted: true
+    });
+
+    // 2. Sync cabins to store
+    localCabins.forEach(cab => {
+      const exists = cabins.find(c => c.id === cab.id);
+      if (exists) {
+        updateCabin(cab.id, { name: cab.name, maxCapacity: cab.maxCapacity, color: cab.color });
+      } else {
+        addCabin({ name: cab.name, maxCapacity: cab.maxCapacity, color: cab.color, type: 'standard' });
+      }
+    });
+
+    // Remove deleted cabins if any
+    cabins.forEach(c => {
+      if (!localCabins.find(lc => lc.id === c.id)) {
+        deleteCabin(c.id);
+      }
     });
   };
 
@@ -203,7 +221,7 @@ export default function OnboardingModal() {
         )}
 
         {/* Step 3: Theme & Visual Style */}
-        {step === 2 && (
+        {step === 3 && (
           <div className="step-content">
             <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#1e293b' }}>
               <Palette size={18} style={{ display: 'inline', marginRight: 6 }} /> Personaliza el Tema de la Aplicación
@@ -244,7 +262,7 @@ export default function OnboardingModal() {
             <div></div>
           )}
 
-          {step < 2 ? (
+          {step < 3 ? (
             <button className="btn btn-primary" onClick={() => setStep(step + 1)}>
               Siguiente <ChevronRight size={18} />
             </button>

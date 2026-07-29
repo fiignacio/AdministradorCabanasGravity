@@ -22,6 +22,7 @@ export const useStore = create(
         primaryColor: '#2c4c3b',
         contactPhone: '',
         contactEmail: '',
+        logoUrl: '',
         isSetupCompleted: false
       },
       updateBusinessConfig: (newConfig) => set((state) => ({
@@ -112,6 +113,66 @@ export const useStore = create(
         set({ offlineQueue: newQueue });
       },
 
+      cabins: [
+        { id: '1', name: 'Cabaña Grande', type: 'large', maxCapacity: 6, color: '#D35400' },
+        { id: '2', name: 'Cabaña Pequeña', type: 'small', maxCapacity: 3, color: '#556B2F' },
+        { id: '3', name: 'Cabaña Mediana 1', type: 'medium', maxCapacity: 4, color: '#B8860B' },
+        { id: '4', name: 'Cabaña Mediana 2', type: 'medium', maxCapacity: 4, color: '#CD853F' }
+      ],
+      addCabin: (cabin) => {
+        const newCabin = { ...cabin, id: Date.now().toString() + Math.random().toString(36).substr(2, 5) };
+        set((state) => ({ cabins: [...state.cabins, newCabin] }));
+        
+        const sb = getSupabase(get().syncConfig);
+        if (sb) sb.from('cabins').insert([newCabin])
+          .then(({error}) => get().handleMutationResponse(error, 'INSERT', 'cabins', newCabin))
+          .catch(e => get().handleMutationResponse(e, 'INSERT', 'cabins', newCabin));
+      },
+      updateCabin: (id, updatedData) => {
+        set((state) => ({ cabins: state.cabins.map(c => c.id === id ? { ...c, ...updatedData } : c) }));
+        
+        const sb = getSupabase(get().syncConfig);
+        if (sb) sb.from('cabins').update(updatedData).eq('id', id)
+          .then(({error}) => get().handleMutationResponse(error, 'UPDATE', 'cabins', updatedData, id))
+          .catch(e => get().handleMutationResponse(e, 'UPDATE', 'cabins', updatedData, id));
+      },
+      deleteCabin: (id) => {
+        set((state) => ({ cabins: state.cabins.filter(c => c.id !== id) }));
+        
+        const sb = getSupabase(get().syncConfig);
+        if (sb) sb.from('cabins').delete().eq('id', id)
+          .then(({error}) => get().handleMutationResponse(error, 'DELETE', 'cabins', null, id))
+          .catch(e => get().handleMutationResponse(e, 'DELETE', 'cabins', null, id));
+      },
+      
+      reservations: [],
+      addReservation: (reservation) => {
+        const newRes = { ...reservation, id: Date.now().toString() + Math.random().toString(36).substr(2, 5) };
+        set((state) => ({ reservations: [...state.reservations, newRes] }));
+        
+        const sb = getSupabase(get().syncConfig);
+        if (sb) sb.from('reservations').insert([newRes])
+          .then(({error}) => get().handleMutationResponse(error, 'INSERT', 'reservations', newRes))
+          .catch(e => get().handleMutationResponse(e, 'INSERT', 'reservations', newRes));
+          
+        return newRes.id;
+      },
+      updateReservation: (id, updatedData) => {
+        set((state) => ({ reservations: state.reservations.map(res => res.id === id ? { ...res, ...updatedData } : res) }));
+        
+        const sb = getSupabase(get().syncConfig);
+        if (sb) sb.from('reservations').update(updatedData).eq('id', id)
+          .then(({error}) => get().handleMutationResponse(error, 'UPDATE', 'reservations', updatedData, id))
+          .catch(e => get().handleMutationResponse(e, 'UPDATE', 'reservations', updatedData, id));
+      },
+      deleteReservation: (id) => {
+        set((state) => ({ reservations: state.reservations.filter(res => res.id !== id) }));
+        
+        const sb = getSupabase(get().syncConfig);
+        if (sb) sb.from('reservations').delete().eq('id', id)
+          .then(({error}) => get().handleMutationResponse(error, 'DELETE', 'reservations', null, id))
+          .catch(e => get().handleMutationResponse(e, 'DELETE', 'reservations', null, id));
+      },
       // CARS
       cars: [
         { id: 'c1', name: 'Suzuki Jimny', plate: 'AB-CD-12', dailyRate: 45000, color: '#27ae60', isActive: true, promoThresholdDays: 3, promoDailyRate: 40000 },
