@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { 
   Calendar, Users, Car, CheckCircle2, AlertCircle, 
-  Send, Home, ShieldCheck, Check, Share2, Sparkles, Moon
+  Send, Home, ShieldCheck, Check, Share2, Sparkles, Moon, Info
 } from 'lucide-react';
 import { format, differenceInDays, addDays, parseISO } from 'date-fns';
 import { useStore, getSupabase } from '../store/useStore';
@@ -434,6 +434,11 @@ export default function PublicAvailability() {
                       ❌ El vehículo {activeCar.name} ya está reservado para las fechas seleccionadas.
                     </p>
                   )}
+
+                  <div style={{ marginTop: '0.8rem', padding: '0.75rem 1rem', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#3b82f6', fontSize: '0.85rem' }}>
+                    <Info size={18} style={{ flexShrink: 0 }} />
+                    <span><strong>Aviso de disponibilidad:</strong> El vehículo seleccionado será revisado por la administración para confirmar su disponibilidad final.</span>
+                  </div>
                 </div>
               )}
             </div>
