@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { 
-  Calendar, Users, Car, Compass, CheckCircle2, AlertCircle, 
+  Calendar, Users, Car, CheckCircle2, AlertCircle, 
   Send, Home, ShieldCheck, Check, Share2, Sparkles, Moon
 } from 'lucide-react';
 import { format, differenceInDays, addDays, parseISO } from 'date-fns';
@@ -8,30 +8,44 @@ import { useStore, getSupabase } from '../store/useStore';
 import './PublicAvailability.css';
 
 export default function PublicAvailability() {
-  const { businessConfig, cabins, cars, tours, prices, reservations, carReservations, syncConfig } = useStore();
+  const { businessConfig, cabins, cars, prices, reservations, carReservations, syncConfig } = useStore();
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const twoDaysLater = format(addDays(new Date(), 2), 'yyyy-MM-dd');
 
+  // Fechas de Cabaña / Estadía
   const [startDateStr, setStartDateStr] = useState(today);
   const [endDateStr, setEndDateStr] = useState(twoDaysLater);
   
+  // Pasajeros
   const [adults, setAdults] = useState(2);
   const [childrenCount, setChildrenCount] = useState(0);
   const [babiesCount, setBabiesCount] = useState(0);
 
+  // Selección de Cabaña y Vehículo
   const [selectedCabinId, setSelectedCabinId] = useState('all');
   const [selectedCarId, setSelectedCarId] = useState('none');
-  const [selectedTourIds, setSelectedTourIds] = useState([]);
-  
+
+  // Modo de arriendo de vehículo ('stay' = Total de la estadía, 'custom' = Fechas específicas)
+  const [carRentalMode, setCarRentalMode] = useState('stay');
+  const [carStartDateStr, setCarStartDateStr] = useState(today);
+  const [carEndDateStr, setCarEndDateStr] = useState(twoDaysLater);
+
   const [clientName, setClientName] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Fechas parseadas
+  // Fechas parseadas de Estadía
   const sDate = parseISO(startDateStr);
   const eDate = parseISO(endDateStr);
   const nights = Math.max(1, differenceInDays(eDate, sDate) || 1);
   const totalGuests = adults + childrenCount + babiesCount;
+
+  // Fechas parseadas de Vehículo
+  const carSDate = carRentalMode === 'stay' ? sDate : parseISO(carStartDateStr);
+  const carEDate = carRentalMode === 'stay' ? eDate : parseISO(carEndDateStr);
+  const carEffectiveStartStr = carRentalMode === 'stay' ? startDateStr : carStartDateStr;
+  const carEffectiveEndStr = carRentalMode === 'stay' ? endDateStr : carEndDateStr;
+  const carDays = Math.max(1, differenceInDays(carEDate, carSDate) || 1);
 
   // Determinar temporada (Alta: Dic, Ene, Feb, Mar)
   const isHighSeason = useMemo(() => {
@@ -44,18 +58,16 @@ export default function PublicAvailability() {
   const isCabinAvailable = (cabinId) => {
     return !reservations.some(res => {
       if (res.cabinId !== cabinId && res.cabinId !== String(cabinId)) return false;
-      const resStart = res.startDate;
-      const resEnd = res.endDate;
-      return resStart < endDateStr && resEnd > startDateStr;
+      return res.startDate < endDateStr && res.endDate > startDateStr;
     });
   };
 
-  // Verificar disponibilidad de un vehículo
-  const isCarAvailable = (carId) => {
+  // Verificar disponibilidad de un vehículo en las fechas efectivas de arriendo
+  const isCarAvailable = (carId, cStart = carEffectiveStartStr, cEnd = carEffectiveEndStr) => {
     if (carId === 'none') return true;
     return !carReservations?.some(res => {
       if (res.carId !== carId && res.carId !== String(carId)) return false;
-      return res.startDate < endDateStr && res.endDate > startDateStr;
+      return res.startDate < cEnd && res.endDate > cStart;
     });
   };
 
@@ -90,27 +102,17 @@ export default function PublicAvailability() {
     return cars.find(c => String(c.id) === String(selectedCarId)) || null;
   }, [selectedCarId, cars]);
 
-  const activeCarIsAvailable = activeCar ? isCarAvailable(activeCar.id) : true;
+  const activeCarIsAvailable = activeCar ? isCarAvailable(activeCar.id, carEffectiveStartStr, carEffectiveEndStr) : true;
 
   const carTotalCost = useMemo(() => {
     if (!activeCar) return 0;
-    const rate = (activeCar.promoThresholdDays > 0 && nights >= activeCar.promoThresholdDays && activeCar.promoDailyRate > 0)
+    const rate = (activeCar.promoThresholdDays > 0 && carDays >= activeCar.promoThresholdDays && activeCar.promoDailyRate > 0)
       ? activeCar.promoDailyRate
       : activeCar.dailyRate;
-    return rate * nights;
-  }, [activeCar, nights]);
+    return rate * carDays;
+  }, [activeCar, carDays]);
 
-  // Cotización de Tours
-  const toursTotalCost = useMemo(() => {
-    if (!tours || selectedTourIds.length === 0) return 0;
-    return selectedTourIds.reduce((sum, tourId) => {
-      const tour = tours.find(t => String(t.id) === String(tourId));
-      if (!tour) return sum;
-      return sum + ((tour.pricePerPerson || 0) * (adults + childrenCount));
-    }, 0);
-  }, [tours, selectedTourIds, adults, childrenCount]);
-
-  const grandTotal = cabinTotalCost + carTotalCost + toursTotalCost;
+  const grandTotal = cabinTotalCost + carTotalCost;
   const deposit50 = Math.round(grandTotal * 0.5);
 
   // Copiar Enlace
@@ -161,15 +163,10 @@ export default function PublicAvailability() {
 
     if (activeCar) {
       msg += `🚗 *Vehículo:* ${activeCar.name} (${activeCar.plate || ''})\n`;
-    }
-
-    if (selectedTourIds.length > 0 && tours) {
-      const tourNames = selectedTourIds
-        .map(id => tours.find(t => String(t.id) === String(id))?.name)
-        .filter(Boolean)
-        .join(', ');
-      if (tourNames) {
-        msg += `🏔️ *Tours:* ${tourNames}\n`;
+      if (carRentalMode === 'stay') {
+        msg += `   ↳ *Período:* Toda la estadía (${carDays} ${carDays === 1 ? 'día' : 'días'})\n`;
+      } else {
+        msg += `   ↳ *Fechas Vehículo:* ${format(carSDate, 'dd/MM/yyyy')} al ${format(carEDate, 'dd/MM/yyyy')} (${carDays} ${carDays === 1 ? 'día' : 'días'})\n`;
       }
     }
 
@@ -178,7 +175,7 @@ export default function PublicAvailability() {
     msg += `¿Me confirman la disponibilidad para transferir el abono y concretar? Muchas gracias! 😊`;
 
     // Registrar notificación interna
-    const summaryNotif = `${clientName || 'Cliente Web'} consultó ${activeCabin ? activeCabin.name : 'Alojamiento'} (${nights} noches, ${totalGuests} pax) por $${grandTotal.toLocaleString('es-CL')}.`;
+    const summaryNotif = `${clientName || 'Cliente Web'} consultó ${activeCabin ? activeCabin.name : 'Alojamiento'} (${nights} noches, ${totalGuests} pax) ${activeCar ? '+ ' + activeCar.name : ''} por $${grandTotal.toLocaleString('es-CL')}.`;
     sendAdminNotification(summaryNotif);
 
     // Redirigir a WhatsApp
@@ -213,7 +210,7 @@ export default function PublicAvailability() {
         {/* PANEL IZQUIERDO: SELECCIÓN Y FORMULARIO */}
         <section className="public-card glass-panel">
           <h2 className="public-card-title">
-            <Calendar size={22} color="var(--accent-primary)" /> 1. Selecciona tus Fechas y Pasajeros
+            <Calendar size={22} color="var(--accent-primary)" /> 1. Fechas de Estadía y Pasajeros
           </h2>
 
           <div className="public-form-grid">
@@ -225,9 +222,17 @@ export default function PublicAvailability() {
                 value={startDateStr}
                 min={today}
                 onChange={(e) => {
-                  setStartDateStr(e.target.value);
-                  if (e.target.value >= endDateStr) {
-                    setEndDateStr(format(addDays(parseISO(e.target.value), 1), 'yyyy-MM-dd'));
+                  const newStart = e.target.value;
+                  setStartDateStr(newStart);
+                  if (newStart >= endDateStr) {
+                    const newEnd = format(addDays(parseISO(newStart), 1), 'yyyy-MM-dd');
+                    setEndDateStr(newEnd);
+                    if (carRentalMode === 'stay') {
+                      setCarStartDateStr(newStart);
+                      setCarEndDateStr(newEnd);
+                    }
+                  } else if (carRentalMode === 'stay') {
+                    setCarStartDateStr(newStart);
                   }
                 }}
               />
@@ -240,7 +245,13 @@ export default function PublicAvailability() {
                 className="public-input" 
                 value={endDateStr}
                 min={format(addDays(sDate, 1), 'yyyy-MM-dd')}
-                onChange={(e) => setEndDateStr(e.target.value)}
+                onChange={(e) => {
+                  const newEnd = e.target.value;
+                  setEndDateStr(newEnd);
+                  if (carRentalMode === 'stay') {
+                    setCarEndDateStr(newEnd);
+                  }
+                }}
               />
             </div>
           </div>
@@ -327,16 +338,16 @@ export default function PublicAvailability() {
             </div>
           )}
 
-          {/* OPCIONES ADICIONALES: VEHÍCULOS Y TOURS */}
+          {/* OPCIONES ADICIONALES: VEHÍCULO */}
           <hr className="public-divider" />
 
           <h2 className="public-card-title">
-            <Car size={22} color="var(--accent-primary)" /> 3. Servicios Adicionales (Opcional)
+            <Car size={22} color="var(--accent-primary)" /> 3. Arriendo de Vehículo (Opcional)
           </h2>
 
-          {cars && cars.length > 0 && (
+          {cars && cars.length > 0 ? (
             <div className="public-form-group">
-              <label className="public-label">🚗 Arriendo de Vehículo</label>
+              <label className="public-label">Seleccionar Vehículo</label>
               <select 
                 className="public-input"
                 value={selectedCarId}
@@ -344,47 +355,90 @@ export default function PublicAvailability() {
               >
                 <option value="none">Sin arriendo de vehículo</option>
                 {cars.map(car => {
-                  const avail = isCarAvailable(car.id);
+                  const avail = isCarAvailable(car.id, carEffectiveStartStr, carEffectiveEndStr);
                   return (
                     <option key={car.id} value={car.id} disabled={!avail}>
-                      {avail ? '✅ ' : '❌ [NO DISPONIBLE] '} {car.name} ({car.plate}) - ${car.dailyRate.toLocaleString('es-CL')}/día
+                      {avail ? '✅ ' : '❌ [NO DISPONIBLE EN FECHAS] '} {car.name} ({car.plate}) - ${car.dailyRate.toLocaleString('es-CL')}/día
                     </option>
                   );
                 })}
               </select>
-            </div>
-          )}
 
-          {tours && tours.length > 0 && (
-            <div className="public-form-group" style={{ marginTop: '1rem' }}>
-              <label className="public-label"><Compass size={18} /> Tours y Excursiones Guiadas</label>
-              <div className="tours-checkbox-list">
-                {tours.map(tour => {
-                  const isChecked = selectedTourIds.includes(String(tour.id));
-                  return (
-                    <label key={tour.id} className="tour-checkbox-item">
+              {/* SELECCIÓN DE PERÍODO DE ARRIENDO DE VEHÍCULO */}
+              {selectedCarId !== 'none' && (
+                <div style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <label className="public-label" style={{ marginBottom: '0.6rem' }}>Período de Arriendo del Vehículo:</label>
+                  
+                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.8rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.9rem' }}>
                       <input 
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedTourIds(prev => [...prev, String(tour.id)]);
-                          } else {
-                            setSelectedTourIds(prev => prev.filter(id => id !== String(tour.id)));
-                          }
-                        }}
+                        type="radio" 
+                        name="carMode" 
+                        value="stay" 
+                        checked={carRentalMode === 'stay'} 
+                        onChange={() => setCarRentalMode('stay')} 
                       />
-                      <div>
-                        <strong>{tour.name}</strong>
-                        <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                          ${(tour.pricePerPerson || 0).toLocaleString('es-CL')} p/p
-                        </span>
-                      </div>
+                      <span>Mismo período de la estadía ({nights} {nights === 1 ? 'día' : 'días'})</span>
                     </label>
-                  );
-                })}
-              </div>
+
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.9rem' }}>
+                      <input 
+                        type="radio" 
+                        name="carMode" 
+                        value="custom" 
+                        checked={carRentalMode === 'custom'} 
+                        onChange={() => {
+                          setCarRentalMode('custom');
+                          setCarStartDateStr(startDateStr);
+                          setCarEndDateStr(endDateStr);
+                        }} 
+                      />
+                      <span>Fechas específicas de arriendo</span>
+                    </label>
+                  </div>
+
+                  {carRentalMode === 'custom' && (
+                    <div className="public-form-grid" style={{ marginTop: '0.5rem' }}>
+                      <div className="public-form-group">
+                        <label className="public-label">Inicio Arriendo Vehículo</label>
+                        <input 
+                          type="date" 
+                          className="public-input" 
+                          value={carStartDateStr}
+                          min={today}
+                          onChange={(e) => {
+                            const newCarStart = e.target.value;
+                            setCarStartDateStr(newCarStart);
+                            if (newCarStart >= carEndDateStr) {
+                              setCarEndDateStr(format(addDays(parseISO(newCarStart), 1), 'yyyy-MM-dd'));
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="public-form-group">
+                        <label className="public-label">Fin Arriendo Vehículo</label>
+                        <input 
+                          type="date" 
+                          className="public-input" 
+                          value={carEndDateStr}
+                          min={format(addDays(carSDate, 1), 'yyyy-MM-dd')}
+                          onChange={(e) => setCarEndDateStr(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {activeCar && !activeCarIsAvailable && (
+                    <p className="unavailable-warning" style={{ marginTop: '0.6rem', textAlign: 'left' }}>
+                      ❌ El vehículo {activeCar.name} ya está reservado para las fechas seleccionadas.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
+          ) : (
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No hay vehículos registrados.</p>
           )}
         </section>
 
@@ -402,15 +456,8 @@ export default function PublicAvailability() {
 
             {activeCar && (
               <div className="summary-row">
-                <span>Vehículo ({activeCar.name}):</span>
+                <span>Vehículo ({activeCar.name} - {carDays} {carDays === 1 ? 'día' : 'días'}):</span>
                 <strong>${carTotalCost.toLocaleString('es-CL')}</strong>
-              </div>
-            )}
-
-            {toursTotalCost > 0 && (
-              <div className="summary-row">
-                <span>Tours Seleccionados:</span>
-                <strong>${toursTotalCost.toLocaleString('es-CL')}</strong>
               </div>
             )}
 
@@ -438,14 +485,20 @@ export default function PublicAvailability() {
             type="button" 
             className="btn-whatsapp-reserve"
             onClick={handleSendWhatsApp}
-            disabled={!activeCabinIsAvailable || !activeCarIsAvailable}
+            disabled={!activeCabinIsAvailable || (selectedCarId !== 'none' && !activeCarIsAvailable)}
           >
             <Send size={20} /> Solicitar Reserva por WhatsApp
           </button>
 
           {!activeCabinIsAvailable && (
             <p className="unavailable-warning">
-              ⚠️ Selecciona fechas con disponibilidad para enviar tu solicitud por WhatsApp.
+              ⚠️ Selecciona fechas de cabaña con disponibilidad para enviar tu solicitud por WhatsApp.
+            </p>
+          )}
+
+          {selectedCarId !== 'none' && !activeCarIsAvailable && (
+            <p className="unavailable-warning">
+              ⚠️ El vehículo seleccionado no está disponible en las fechas indicadas.
             </p>
           )}
 
