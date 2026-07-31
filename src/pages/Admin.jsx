@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { Settings, Save, Building2, Palette, RefreshCw, Upload, Image as ImageIcon, Trash2, Plus, Edit2, X } from 'lucide-react';
+import { Settings, Save, Building2, Palette, RefreshCw, Upload, Image as ImageIcon, Trash2, Plus, Edit2, X, Share2, Copy, ExternalLink, Check } from 'lucide-react';
 import './Admin.css';
 
 const THEME_PRESETS = [
@@ -18,6 +18,16 @@ const Admin = () => {
     cabins, addCabin, updateCabin, deleteCabin,
     businessConfig, updateBusinessConfig, resetSetup 
   } = useStore();
+
+  const [copiedPublicLink, setCopiedPublicLink] = useState(false);
+
+  const publicLink = `${window.location.origin}/disponibilidad`;
+
+  const handleCopyPublicLink = () => {
+    navigator.clipboard.writeText(publicLink);
+    setCopiedPublicLink(true);
+    setTimeout(() => setCopiedPublicLink(false), 2500);
+  };
   
   // Branding Form State
   const [brandForm, setBrandForm] = useState({
@@ -226,6 +236,44 @@ const Admin = () => {
               {brandSaved && <span className="text-success save-msg">¡Marca y logo actualizados!</span>}
             </div>
           </form>
+
+          {/* Enlace Compartible de Portal Público */}
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.2rem', borderTop: '1px dashed var(--border-color)' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+              <Share2 size={18} color="var(--accent-primary)" /> Enlace de Consulta Pública para Clientes
+            </h3>
+            <p className="text-secondary" style={{ fontSize: '0.82rem', margin: '0 0 0.8rem 0' }}>
+              Comparte este enlace por WhatsApp o Redes Sociales para que tus clientes miren disponibilidad y coticen directamente.
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input 
+                type="text" 
+                readOnly 
+                className="form-input" 
+                value={publicLink} 
+                style={{ background: 'rgba(0,0,0,0.05)', fontSize: '0.85rem' }} 
+              />
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={handleCopyPublicLink}
+                style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '5px' }}
+              >
+                {copiedPublicLink ? <Check size={16} color="var(--success)" /> : <Copy size={16} />}
+                {copiedPublicLink ? '¡Copiado!' : 'Copiar'}
+              </button>
+              <a 
+                href="/disponibilidad" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn btn-secondary"
+                style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}
+                title="Probar vista pública"
+              >
+                <ExternalLink size={16} /> Ver
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* 2. Tarifas Globales por Temporada de Cabañas */}

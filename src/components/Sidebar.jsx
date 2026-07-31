@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, Compass, BookOpen, BarChart3, Car, Settings, Calculator, Users, RefreshCw, WifiOff, CloudOff, Palette } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Compass, BookOpen, BarChart3, Car, Settings, Calculator, Users, RefreshCw, WifiOff, CloudOff, Palette, Share2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { FEATURES } from '../config/features';
 import './Sidebar.css';
@@ -32,6 +32,7 @@ const Sidebar = ({ onClose }) => {
     { path: '/admin/settings', name: 'Personalización', icon: <Palette size={20} />, enabled: true },
     { path: '/admin/tools/quote', name: 'Cotizador', icon: <Calculator size={20} />, enabled: FEATURES.showQuote },
     { path: '/admin/tools/passengers', name: 'Pasajeros', icon: <Users size={20} />, enabled: FEATURES.showPassengers },
+    { path: '/disponibilidad', name: 'Portal Público', icon: <Share2 size={20} />, enabled: true },
     { path: '/admin/sync', name: 'Sincronización', icon: <RefreshCw size={20} />, enabled: true },
   ];
 

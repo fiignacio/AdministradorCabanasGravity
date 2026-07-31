@@ -15,6 +15,7 @@ import QuoteGenerator from './pages/QuoteGenerator';
 import PassengerRegistration from './pages/PassengerRegistration';
 import SyncManager from './pages/SyncManager';
 import Login from './pages/Login';
+import PublicAvailability from './pages/PublicAvailability';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -44,6 +45,10 @@ function App() {
         {/* Vista Pública Principal */}
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
         
+        {/* Portal Público de Consulta de Disponibilidad y Cotizador */}
+        <Route path="/disponibilidad" element={<PublicAvailability />} />
+        <Route path="/consultar" element={<PublicAvailability />} />
+
         {/* Login Page */}
         <Route path="/login" element={<Login />} />
 
