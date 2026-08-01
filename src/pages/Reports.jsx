@@ -45,7 +45,7 @@ const Reports = () => {
     return list.length > 0 ? list : ['Dueño 1', 'Dueño 2'];
   }, [cabins]);
 
-  // 1. Filtrar Cabañas por Mes, Año, Dueño y Cabaña
+  // 1. Filtrar Cabañas por Mes, Año, Dueño y Cabaña (Ordenadas por fecha de entrada 'startDate' de menor a mayor)
   const filteredReservations = useMemo(() => {
     let results = reservations;
 
@@ -65,10 +65,17 @@ const Reports = () => {
       });
     }
 
-    return results.filter(res => res.status !== 'blocked');
+    const activeRes = results.filter(res => res.status !== 'blocked');
+
+    // Ordenar de menor a mayor por fecha de llegada (Check-In)
+    return [...activeRes].sort((a, b) => {
+      const dA = parseSafeDate(a.startDate).getTime();
+      const dB = parseSafeDate(b.startDate).getTime();
+      return dA - dB;
+    });
   }, [reservations, cabins, selectedMonth, selectedYear, filterType, selectedFilter]);
 
-  // 2. Filtrar Vehículos por Mes y Año
+  // 2. Filtrar Vehículos por Mes y Año (Ordenados por fecha de inicio de menor a mayor)
   const filteredCarReservations = useMemo(() => {
     let results = carReservations;
     if (selectedMonth !== 'all') {
@@ -77,10 +84,16 @@ const Reports = () => {
         return d.getMonth().toString() === selectedMonth && d.getFullYear().toString() === selectedYear;
       });
     }
-    return results.filter(res => res.status === 'confirmed');
+    const confirmedRes = results.filter(res => res.status === 'confirmed');
+
+    return [...confirmedRes].sort((a, b) => {
+      const dA = parseSafeDate(a.startDate).getTime();
+      const dB = parseSafeDate(b.startDate).getTime();
+      return dA - dB;
+    });
   }, [carReservations, selectedMonth, selectedYear]);
 
-  // 3. Filtrar Tours por Mes y Año
+  // 3. Filtrar Tours por Mes y Año (Ordenados por fecha de menor a mayor)
   const filteredTourReservations = useMemo(() => {
     let results = tourReservations;
     if (selectedMonth !== 'all') {
@@ -89,7 +102,13 @@ const Reports = () => {
         return d.getMonth().toString() === selectedMonth && d.getFullYear().toString() === selectedYear;
       });
     }
-    return results.filter(res => res.status !== 'cancelled');
+    const activeRes = results.filter(res => res.status !== 'cancelled');
+
+    return [...activeRes].sort((a, b) => {
+      const dA = parseSafeDate(a.date).getTime();
+      const dB = parseSafeDate(b.date).getTime();
+      return dA - dB;
+    });
   }, [tourReservations, selectedMonth, selectedYear]);
 
   // Cálculos de Ingresos por área
