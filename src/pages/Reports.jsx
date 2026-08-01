@@ -325,7 +325,8 @@ const Reports = () => {
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Cliente</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Cabaña</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Propietario / Dueño</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Fechas Estadía</th>
+                    <th style={{ padding: '8px 12px', color: '#475569' }}>Llegada (In)</th>
+                    <th style={{ padding: '8px 12px', color: '#475569' }}>Salida (Out)</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Vuelos (In / Out)</th>
                     <th style={{ padding: '8px 12px', color: '#475569', textAlign: 'center' }}>Pax (A/N/B)</th>
                     <th style={{ padding: '8px 12px', color: '#475569', textAlign: 'right' }}>Total ($)</th>
@@ -345,8 +346,11 @@ const Reports = () => {
                         <td style={{ padding: '8px 12px', color: '#64748b' }}>
                           {getCabinOwner(cabin)}
                         </td>
+                        <td style={{ padding: '8px 12px', color: '#475569', fontWeight: 'bold' }}>
+                          {formatSafeDate(res.startDate, 'dd/MM/yyyy')}
+                        </td>
                         <td style={{ padding: '8px 12px', color: '#475569' }}>
-                          {formatSafeDate(res.startDate, 'dd/MM/yyyy')} al {formatSafeDate(res.endDate, 'dd/MM/yyyy')}
+                          {formatSafeDate(res.endDate, 'dd/MM/yyyy')}
                         </td>
                         <td style={{ padding: '8px 12px', color: '#64748b' }}>
                           In: <strong>{res.flightIn || '--'}</strong> | Out: <strong>{res.flightOut || '--'}</strong>
@@ -380,7 +384,8 @@ const Reports = () => {
                   <tr>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Cliente</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Vehículo</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Fechas Arriendo</th>
+                    <th style={{ padding: '8px 12px', color: '#475569' }}>Inicio (In)</th>
+                    <th style={{ padding: '8px 12px', color: '#475569' }}>Fin (Out)</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Pago / Estado</th>
                     <th style={{ padding: '8px 12px', color: '#475569', textAlign: 'right' }}>Total ($)</th>
                   </tr>
@@ -396,8 +401,11 @@ const Reports = () => {
                             {car?.name || 'Vehículo'} ({car?.plate || ''})
                           </span>
                         </td>
+                        <td style={{ padding: '8px 12px', color: '#475569', fontWeight: 'bold' }}>
+                          {formatSafeDate(res.startDate, 'dd/MM/yyyy')}
+                        </td>
                         <td style={{ padding: '8px 12px', color: '#475569' }}>
-                          {formatSafeDate(res.startDate, 'dd/MM/yyyy')} al {formatSafeDate(res.endDate, 'dd/MM/yyyy')}
+                          {formatSafeDate(res.endDate, 'dd/MM/yyyy')}
                         </td>
                         <td style={{ padding: '8px 12px', color: '#64748b' }}>
                           {res.paymentMethod || 'Confirmada'} {res.depositAmount > 0 ? `(Abono: $${Number(res.depositAmount).toLocaleString('es-CL')})` : ''}
