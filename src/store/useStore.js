@@ -114,10 +114,10 @@ export const useStore = create(
       },
 
       cabins: [
-        { id: '1', name: 'Cabaña Grande', type: 'large', maxCapacity: 6, color: '#D35400' },
-        { id: '2', name: 'Cabaña Pequeña', type: 'small', maxCapacity: 3, color: '#556B2F' },
-        { id: '3', name: 'Cabaña Mediana 1', type: 'medium', maxCapacity: 4, color: '#B8860B' },
-        { id: '4', name: 'Cabaña Mediana 2', type: 'medium', maxCapacity: 4, color: '#CD853F' }
+        { id: '1', name: 'Cabaña Grande', type: 'large', maxCapacity: 6, color: '#D35400', owner: 'Administración' },
+        { id: '2', name: 'Cabaña Pequeña', type: 'small', maxCapacity: 3, color: '#556B2F', owner: 'Administración' },
+        { id: '3', name: 'Cabaña Mediana 1', type: 'medium', maxCapacity: 4, color: '#B8860B', owner: 'Propietario 1' },
+        { id: '4', name: 'Cabaña Mediana 2', type: 'medium', maxCapacity: 4, color: '#CD853F', owner: 'Propietario 2' }
       ],
       addCabin: (cabin) => {
         const newCabin = { ...cabin, id: Date.now().toString() + Math.random().toString(36).substr(2, 5) };
