@@ -1,12 +1,12 @@
 import { useState, useMemo, useRef } from 'react';
 import { useStore } from '../store/useStore';
-import { BarChart3, Filter, Download, Home, Car, Compass, DollarSign, UserCheck } from 'lucide-react';
+import { BarChart3, Filter, Download, Home, Compass, DollarSign } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import { parseSafeDate, formatSafeDate } from '../utils/dateUtils';
 import './Reports.css';
 
 const Reports = () => {
-  const { reservations, cabins, carReservations, cars, tourReservations, tours } = useStore();
+  const { reservations, cabins, tourReservations, tours } = useStore();
   
   // Filtros de segmento y fecha
   const [filterType, setFilterType] = useState('all'); // 'all', 'owner', 'cabin'
@@ -75,27 +75,9 @@ const Reports = () => {
     });
   }, [reservations, cabins, selectedMonth, selectedYear, filterType, selectedFilter]);
 
-  // 2. Filtrar Vehículos por Mes y Año (Ordenados por fecha de inicio de menor a mayor)
-  const filteredCarReservations = useMemo(() => {
-    let results = carReservations;
-    if (selectedMonth !== 'all') {
-      results = results.filter(res => {
-        const d = parseSafeDate(res.startDate);
-        return d.getMonth().toString() === selectedMonth && d.getFullYear().toString() === selectedYear;
-      });
-    }
-    const confirmedRes = results.filter(res => res.status === 'confirmed');
-
-    return [...confirmedRes].sort((a, b) => {
-      const dA = parseSafeDate(a.startDate).getTime();
-      const dB = parseSafeDate(b.startDate).getTime();
-      return dA - dB;
-    });
-  }, [carReservations, selectedMonth, selectedYear]);
-
-  // 3. Filtrar Tours por Mes y Año (Ordenados por fecha de menor a mayor)
+  // 2. Filtrar Tours por Mes y Año (Ordenados por fecha de menor a mayor)
   const filteredTourReservations = useMemo(() => {
-    let results = tourReservations;
+    let results = tourReservations || [];
     if (selectedMonth !== 'all') {
       results = results.filter(res => {
         const d = parseSafeDate(res.date);
@@ -113,31 +95,9 @@ const Reports = () => {
 
   // Cálculos de Ingresos por área
   const totalIncome = filteredReservations.reduce((acc, res) => acc + Number(res.totalCost), 0);
-  const totalCarIncome = filteredCarReservations.reduce((acc, res) => acc + Number(res.totalCost), 0);
   const totalTourIncome = filteredTourReservations.reduce((acc, res) => acc + Number(res.totalCost), 0);
 
-  const grandTotalIncome = totalIncome + totalCarIncome + totalTourIncome;
-
-  // Desglose por Vehículo
-  const carIncomeByCar = cars.map(car => {
-    const resForCar = filteredCarReservations.filter(r => r.carId === car.id);
-    return {
-      car,
-      total: resForCar.reduce((acc, r) => acc + Number(r.totalCost), 0),
-      count: resForCar.length
-    };
-  }).filter(c => c.total > 0 || c.count > 0);
-
-  // Desglose por Tour
-  const tourIncomeByTour = tours.map(tour => {
-    const resForTour = filteredTourReservations.filter(r => r.tourId === tour.id);
-    return {
-      tour,
-      total: resForTour.reduce((acc, r) => acc + Number(r.totalCost), 0),
-      paxTotal: resForTour.reduce((acc, r) => acc + Number(r.paxCount || 1), 0),
-      count: resForTour.length
-    };
-  }).filter(t => t.total > 0 || t.count > 0);
+  const grandTotalIncome = totalIncome + totalTourIncome;
 
   // Exportar a PDF
   const handleExportPDF = () => {
@@ -168,12 +128,12 @@ const Reports = () => {
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1>Reportes y Analítica</h1>
-          <p className="text-secondary">Informes de ingresos segmentados por Dueño, Cabañas, Vehículos y Tours.</p>
+          <p className="text-secondary">Informes de ingresos segmentados por Dueño y Cabañas.</p>
         </div>
         <button 
           className="btn btn-primary" 
           onClick={handleExportPDF} 
-          disabled={filteredReservations.length === 0 && filteredCarReservations.length === 0 && filteredTourReservations.length === 0}
+          disabled={filteredReservations.length === 0 && filteredTourReservations.length === 0}
         >
           <Download size={20} /> Exportar Reporte a PDF
         </button>
@@ -215,7 +175,7 @@ const Reports = () => {
                 {filterType === 'owner' ? (
                   owners.map(o => <option key={o} value={o}>{o}</option>)
                 ) : (
-                  cabins.map(c => <option key={c.id} value={c.id}>{c.name} ({c.owner || 'Admin'})</option>)
+                  cabins.map(c => <option key={c.id} value={c.id}>{c.name} ({getCabinOwner(c)})</option>)
                 )}
               </select>
             </div>
@@ -253,23 +213,16 @@ const Reports = () => {
           </div>
         </div>
 
-        <div className="stat-card glass-panel" style={{ borderLeft: '4px solid #2980b9' }}>
-          <div className="stat-icon" style={{ color: '#2980b9', background: 'rgba(41,128,185,0.1)' }}><Car size={24} /></div>
-          <div className="stat-info">
-            <span className="stat-label">Ingresos Vehículos</span>
-            <h2 className="stat-value" style={{ color: '#2980b9' }}>${totalCarIncome.toLocaleString('es-CL')}</h2>
-            <small style={{ color: 'var(--text-secondary)' }}>{filteredCarReservations.length} arriendos</small>
+        {filteredTourReservations.length > 0 && (
+          <div className="stat-card glass-panel" style={{ borderLeft: '4px solid #8e44ad' }}>
+            <div className="stat-icon" style={{ color: '#8e44ad', background: 'rgba(142,68,173,0.1)' }}><Compass size={24} /></div>
+            <div className="stat-info">
+              <span className="stat-label">Ingresos Tours</span>
+              <h2 className="stat-value" style={{ color: '#8e44ad' }}>${totalTourIncome.toLocaleString('es-CL')}</h2>
+              <small style={{ color: 'var(--text-secondary)' }}>{filteredTourReservations.length} salidas</small>
+            </div>
           </div>
-        </div>
-
-        <div className="stat-card glass-panel" style={{ borderLeft: '4px solid #8e44ad' }}>
-          <div className="stat-icon" style={{ color: '#8e44ad', background: 'rgba(142,68,173,0.1)' }}><Compass size={24} /></div>
-          <div className="stat-info">
-            <span className="stat-label">Ingresos Tours</span>
-            <h2 className="stat-value" style={{ color: '#8e44ad' }}>${totalTourIncome.toLocaleString('es-CL')}</h2>
-            <small style={{ color: 'var(--text-secondary)' }}>{filteredTourReservations.length} salidas</small>
-          </div>
-        </div>
+        )}
 
         <div className="stat-card glass-panel" style={{ borderLeft: '4px solid #27ae60', background: 'linear-gradient(135deg, rgba(39,174,96,0.05), transparent)' }}>
           <div className="stat-icon" style={{ color: '#27ae60', background: 'rgba(39,174,96,0.15)' }}><DollarSign size={24} /></div>
@@ -286,7 +239,7 @@ const Reports = () => {
         {/* Encabezado PDF */}
         <div style={{ marginBottom: '1.5rem', borderBottom: '2px solid #2c4c3b', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h2 style={{ color: '#2c4c3b', margin: '0 0 0.25rem 0' }}>Reporte Operativo y Financiero</h2>
+            <h2 style={{ color: '#2c4c3b', margin: '0 0 0.25rem 0' }}>Reporte Operativo y Financiero de Cabañas</h2>
             <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
               Segmento: <strong>
                 {filterType === 'all' 
@@ -303,7 +256,7 @@ const Reports = () => {
               Total: ${grandTotalIncome.toLocaleString('es-CL')}
             </h3>
             <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              Cabañas: ${totalIncome.toLocaleString('es-CL')} | Autos: ${totalCarIncome.toLocaleString('es-CL')} | Tours: ${totalTourIncome.toLocaleString('es-CL')}
+              Cabañas: ${totalIncome.toLocaleString('es-CL')} {totalTourIncome > 0 ? `| Tours: $${totalTourIncome.toLocaleString('es-CL')}` : ''}
             </span>
           </div>
         </div>
@@ -325,8 +278,8 @@ const Reports = () => {
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Cliente</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Cabaña</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Propietario / Dueño</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Llegada (In)</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Salida (Out)</th>
+                    <th style={{ padding: '8px 12px', color: '#475569' }}>Check-In (Llegada)</th>
+                    <th style={{ padding: '8px 12px', color: '#475569' }}>Check-Out (Salida)</th>
                     <th style={{ padding: '8px 12px', color: '#475569' }}>Vuelos (In / Out)</th>
                     <th style={{ padding: '8px 12px', color: '#475569', textAlign: 'center' }}>Pax (A/N/B)</th>
                     <th style={{ padding: '8px 12px', color: '#475569', textAlign: 'right' }}>Total ($)</th>
@@ -346,10 +299,10 @@ const Reports = () => {
                         <td style={{ padding: '8px 12px', color: '#64748b' }}>
                           {getCabinOwner(cabin)}
                         </td>
-                        <td style={{ padding: '8px 12px', color: '#475569', fontWeight: 'bold' }}>
+                        <td style={{ padding: '8px 12px', color: '#16a34a', fontWeight: 'bold' }}>
                           {formatSafeDate(res.startDate, 'dd/MM/yyyy')}
                         </td>
-                        <td style={{ padding: '8px 12px', color: '#475569' }}>
+                        <td style={{ padding: '8px 12px', color: '#dc2626', fontWeight: 'bold' }}>
                           {formatSafeDate(res.endDate, 'dd/MM/yyyy')}
                         </td>
                         <td style={{ padding: '8px 12px', color: '#64748b' }}>
@@ -370,59 +323,7 @@ const Reports = () => {
           )}
         </div>
 
-        {/* 2. SECCIÓN VEHÍCULOS */}
-        {filteredCarReservations.length > 0 && (
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ color: '#2980b9', borderBottom: '1px solid #cbd5e1', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
-              <span>🚗 Arriendos de Vehículos</span>
-              <span style={{ fontSize: '0.9rem' }}>Subtotal: ${totalCarIncome.toLocaleString('es-CL')} ({filteredCarReservations.length} arriendos)</span>
-            </h3>
-
-            <div className="table-responsive" style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
-                <thead style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
-                  <tr>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Cliente</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Vehículo</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Inicio (In)</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Fin (Out)</th>
-                    <th style={{ padding: '8px 12px', color: '#475569' }}>Pago / Estado</th>
-                    <th style={{ padding: '8px 12px', color: '#475569', textAlign: 'right' }}>Total ($)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCarReservations.map(res => {
-                    const car = cars.find(c => c.id === res.carId);
-                    return (
-                      <tr key={res.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '8px 12px', fontWeight: 'bold' }}>{res.clientName}</td>
-                        <td style={{ padding: '8px 12px' }}>
-                          <span style={{ background: 'rgba(41,128,185,0.1)', color: '#2980b9', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                            {car?.name || 'Vehículo'} ({car?.plate || ''})
-                          </span>
-                        </td>
-                        <td style={{ padding: '8px 12px', color: '#475569', fontWeight: 'bold' }}>
-                          {formatSafeDate(res.startDate, 'dd/MM/yyyy')}
-                        </td>
-                        <td style={{ padding: '8px 12px', color: '#475569' }}>
-                          {formatSafeDate(res.endDate, 'dd/MM/yyyy')}
-                        </td>
-                        <td style={{ padding: '8px 12px', color: '#64748b' }}>
-                          {res.paymentMethod || 'Confirmada'} {res.depositAmount > 0 ? `(Abono: $${Number(res.depositAmount).toLocaleString('es-CL')})` : ''}
-                        </td>
-                        <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold', color: '#2980b9' }}>
-                          ${Number(res.totalCost).toLocaleString('es-CL')}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* 3. SECCIÓN TOURS */}
+        {/* 2. SECCIÓN TOURS */}
         {filteredTourReservations.length > 0 && (
           <div>
             <h3 style={{ color: '#8e44ad', borderBottom: '1px solid #cbd5e1', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
