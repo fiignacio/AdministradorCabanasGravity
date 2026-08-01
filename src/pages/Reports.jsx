@@ -24,13 +24,25 @@ const Reports = () => {
     { id: '9', name: 'Octubre' }, { id: '10', name: 'Noviembre' }, { id: '11', name: 'Diciembre' }
   ];
 
-  // Lista única de Dueños/Propietarios extraídos de la lista de cabañas
-  const owners = useMemo(() => {
-    const list = Array.from(new Set(cabins.map(c => c.owner).filter(Boolean)));
-    if (list.length === 0) {
-      return ['Administración', 'Propietario 1', 'Propietario 2'];
+  // Función auxiliar para obtener el dueño asignado según la estructura oficial:
+  // - Cabaña Grande (id 1) y Cabaña Pequeña (id 2) -> Dueño 1
+  // - Cabañas Medianas 1 y 2 (id 3 y 4) -> Dueño 2
+  const getCabinOwner = (cabin) => {
+    if (!cabin) return 'Dueño 1';
+    const cId = String(cabin.id);
+    if (cId === '1' || cId === '2' || cabin.name?.toLowerCase().includes('grande') || cabin.name?.toLowerCase().includes('pequeña')) {
+      return 'Dueño 1';
     }
-    return list;
+    if (cId === '3' || cId === '4' || cabin.name?.toLowerCase().includes('mediana')) {
+      return 'Dueño 2';
+    }
+    return cabin.owner || 'Dueño 1';
+  };
+
+  // Lista única de Dueños/Propietarios
+  const owners = useMemo(() => {
+    const list = Array.from(new Set(cabins.map(c => getCabinOwner(c))));
+    return list.length > 0 ? list : ['Dueño 1', 'Dueño 2'];
   }, [cabins]);
 
   // 1. Filtrar Cabañas por Mes, Año, Dueño y Cabaña
@@ -49,7 +61,7 @@ const Reports = () => {
     } else if (filterType === 'owner' && selectedFilter !== 'all') {
       results = results.filter(res => {
         const cabin = cabins.find(c => String(c.id) === String(res.cabinId));
-        return cabin && (cabin.owner === selectedFilter || cabin.ownerName === selectedFilter);
+        return getCabinOwner(cabin) === selectedFilter;
       });
     }
 
@@ -312,7 +324,7 @@ const Reports = () => {
                           </span>
                         </td>
                         <td style={{ padding: '8px 12px', color: '#64748b' }}>
-                          {cabin?.owner || 'Administración'}
+                          {getCabinOwner(cabin)}
                         </td>
                         <td style={{ padding: '8px 12px', color: '#475569' }}>
                           {formatSafeDate(res.startDate, 'dd/MM/yyyy')} al {formatSafeDate(res.endDate, 'dd/MM/yyyy')}
