@@ -27,6 +27,7 @@ const Sidebar = ({ onClose }) => {
     { path: '/admin/tours-calendar', name: 'Cal. Tours', icon: <Compass size={20} />, enabled: true },
     { path: '/admin/reservations', name: 'Reservas Cabañas', icon: <BookOpen size={20} />, enabled: true },
     { path: '/admin/reports', name: 'Reportes', icon: <BarChart3 size={20} />, enabled: true },
+    { path: '/admin/referrers', name: 'Referidos / Agencias', icon: <Users size={20} />, enabled: true },
     { path: '/admin/cars-settings', name: 'Flota Vehículos', icon: <Settings size={20} />, enabled: true },
     { path: '/admin/tours-settings', name: 'Conf. Tours', icon: <Settings size={20} />, enabled: true },
     { path: '/admin/settings', name: 'Personalización', icon: <Palette size={20} />, enabled: true },

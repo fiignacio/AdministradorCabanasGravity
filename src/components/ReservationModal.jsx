@@ -7,7 +7,7 @@ import { parseSafeDate } from '../utils/dateUtils';
 import './ReservationModal.css';
 
 const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) => {
-  const { cabins, prices, addReservation, updateReservation, reservations, cars, carReservations, addCarReservation, updateCarReservation, deleteCarReservation } = useStore();
+  const { cabins, prices, addReservation, updateReservation, reservations, cars, carReservations, addCarReservation, updateCarReservation, deleteCarReservation, referrers, addReferrer } = useStore();
   const navigate = useNavigate();
   
   const [carData, setCarData] = useState({
@@ -189,6 +189,14 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
       }
     }
   }, [formData.startDate, formData.endDate]); // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  const handleCreateReferrer = () => {
+    const name = window.prompt('Nombre del nuevo referente o agencia:');
+    if (name && name.trim()) {
+      const newId = addReferrer({ name: name.trim(), createdAt: new Date().toISOString() });
+      setFormData(prev => ({ ...prev, referrerId: newId }));
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -467,6 +475,32 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
 
           {!formData.isBlock && (
             <>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label className="form-label">Referido por (Agencia / Tercero)</label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <select 
+                    name="referrerId" 
+                    className="form-input" 
+                    value={formData.referrerId || ''} 
+                    onChange={handleChange} 
+                    style={{ flex: 1 }}
+                  >
+                    <option value="">Sin referente (Directo)</option>
+                    {referrers?.map(ref => (
+                      <option key={ref.id} value={ref.id}>{ref.name}</option>
+                    ))}
+                  </select>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={handleCreateReferrer}
+                    style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}
+                  >
+                    + Nuevo
+                  </button>
+                </div>
+              </div>
+
               <div className="form-row guests-row">
                 <div className="form-group">
                   <label className="form-label">Adultos</label>

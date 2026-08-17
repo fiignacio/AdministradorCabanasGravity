@@ -16,6 +16,7 @@ import PassengerRegistration from './pages/PassengerRegistration';
 import SyncManager from './pages/SyncManager';
 import Login from './pages/Login';
 import PublicAvailability from './pages/PublicAvailability';
+import Referrers from './pages/Referrers';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
             <Route path="tours-calendar" element={<TourCalendar />} />
             <Route path="reservations" element={<Reservations />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="referrers" element={<Referrers />} />
             <Route path="settings" element={<Admin />} />
             <Route path="cars-settings" element={<AdminCars />} />
             <Route path="tours-settings" element={<AdminTours />} />

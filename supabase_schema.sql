@@ -77,6 +77,22 @@ ALTER TABLE public.reservations ADD COLUMN IF NOT EXISTS "notes" text;
 ALTER TABLE public.reservations ADD COLUMN IF NOT EXISTS "clientPhone" text;
 ALTER TABLE public.car_reservations ADD COLUMN IF NOT EXISTS "clientPhone" text;
 
+-- Tabla de referentes (Agencias/Terceros)
+CREATE TABLE IF NOT EXISTS public.referrers (
+    id text PRIMARY KEY,
+    name text NOT NULL,
+    phone text,
+    email text,
+    "createdAt" text
+);
+
+ALTER TABLE public.referrers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Permitir todo acceso anónimo referentes" ON public.referrers FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.reservations ADD COLUMN IF NOT EXISTS "referrerId" text;
+ALTER TABLE public.reservations ADD COLUMN IF NOT EXISTS "referrerStatus" text DEFAULT 'pending';
+
+
 -- Storage Policies
 -- Permitir subidas públicas al bucket 'quotes'
 -- CREATE POLICY "Permitir subida de cotizaciones" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'quotes');
