@@ -480,6 +480,28 @@ export const useStore = create(
 
         const handleRealtimeEvent = (table, stateKey) => (payload) => {
           console.log(`Evento Realtime en ${table}:`, payload);
+
+          if (payload.eventType === 'INSERT') {
+            const clientName = payload.new?.clientName || payload.new?.client_name || 'Nuevo cliente';
+            let msgTitle = '🔔 Nueva Actividad en Cabañas Manuara';
+            let msgBody = `Se ha registrado un nuevo elemento en ${table}.`;
+
+            if (table === 'reservations') {
+              msgTitle = '🏡 Nueva Reserva de Cabaña';
+              msgBody = `${clientName} ha realizado una pre-reserva.`;
+            } else if (table === 'car_reservations') {
+              msgTitle = '🚗 Nueva Reserva de Vehículo';
+              msgBody = `${clientName} ha reservado un vehículo.`;
+            } else if (table === 'tour_reservations') {
+              msgTitle = '🗿 Nueva Reserva de Tour';
+              msgBody = `${clientName} ha reservado una excursión.`;
+            }
+
+            import('../utils/notifications').then(({ sendNativeNotification }) => {
+              sendNativeNotification(msgTitle, msgBody);
+            });
+          }
+
           set((state) => {
             const currentList = state[stateKey];
             let newList = [...currentList];

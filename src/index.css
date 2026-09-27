@@ -500,3 +500,48 @@ h3 {
     max-height: 75vh !important;
   }
 }
+
+/* ----------------------------------------------------
+   OPTIMIZACIÓN RESPONSIVA MÓVIL (TODAS LAS PESTAÑAS)
+------------------------------------------------------ */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-md);
+}
+
+.table-responsive table {
+  min-width: 600px;
+}
+
+@media (max-width: 600px) {
+  body, .app-container, .main-content {
+    overflow-x: hidden;
+  }
+
+  .main-content {
+    padding: 0.75rem 0.5rem !important;
+  }
+
+  .form-input, .form-select, .btn {
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Modales en teléfonos pequeños */
+  .modal-overlay {
+    padding: 0.5rem !important;
+  }
+
+  .modal-content {
+    padding: 1rem !important;
+    border-radius: 16px !important;
+    max-height: 96vh !important;
+  }
+}

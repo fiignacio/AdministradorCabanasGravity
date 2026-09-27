@@ -199,9 +199,13 @@ export default function PublicAvailability() {
       });
     }
 
-    // 3. Registrar Notificación Interna para el Administrador
+    // 3. Registrar Notificación Interna y lanzar alerta sonora/vibración para el Administrador
     const summaryNotif = `🔔 SOLICITUD PENDIENTE: ${clientName.trim()} solicita ${activeCabin ? activeCabin.name : 'Alojamiento'} (${nights} noches, ${totalGuests} pax) ${activeCar ? '+ ' + activeCar.name : ''} por $${grandTotal.toLocaleString('es-CL')}.`;
     sendAdminNotification(summaryNotif);
+
+    import('../utils/notifications').then(({ sendNativeNotification }) => {
+      sendNativeNotification('🔔 Nueva Solicitud de Reserva', `${clientName.trim()} ha enviado una solicitud para ${activeCabin ? activeCabin.name : 'Cabaña'}.`);
+    });
 
     // 4. Generar y Abrir Enlace de WhatsApp para el Administrador
     const bPhone = businessConfig.contactPhone?.replace(/\D/g, '') || '56984562244';

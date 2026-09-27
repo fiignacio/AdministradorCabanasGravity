@@ -98,6 +98,38 @@ export default function AdminNotifications() {
               <button className="btn-icon" onClick={() => setIsOpen(false)} style={{ padding: '2px' }}><X size={18} /></button>
             </div>
 
+            {/* BOTÓN DE NOTIFICACIONES NATIVAS CON SONIDO Y VIBRACIÓN MÓVIL */}
+            <div style={{ background: 'linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%)', padding: '0.75rem 1rem', borderRadius: '12px', marginBottom: '1rem', border: '1px solid #fcd34d' }}>
+              <div style={{ fontSize: '0.8rem', color: '#78350F', fontWeight: '700', marginBottom: '0.4rem' }}>
+                📲 Notificaciones Nativas Móvil & Web
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    const { requestNotificationPermission, sendNativeNotification } = await import('../utils/notifications');
+                    const granted = await requestNotificationPermission();
+                    if (granted) {
+                      sendNativeNotification('🔔 Notificaciones Activadas', '¡Sonido, vibración y banners nativos activados correctamente!');
+                    }
+                  }}
+                  style={{ flex: 1, padding: '0.4rem 0.6rem', fontSize: '0.75rem', fontWeight: '700', background: '#8C5A32', color: '#ffffff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                  Activar Permiso 📲
+                </button>
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    const { sendNativeNotification } = await import('../utils/notifications');
+                    sendNativeNotification('🔔 Prueba de Sonido y Vibración', 'Cabañas Manuara: Dispositivo vibrando y sonando.');
+                  }}
+                  style={{ flex: 1, padding: '0.4rem 0.6rem', fontSize: '0.75rem', fontWeight: '700', background: '#ffffff', color: '#78350F', border: '1px solid #d97706', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                  Probar Vibra/Sonido 🔔
+                </button>
+              </div>
+            </div>
+
             {totalAlerts === 0 ? (
               <div style={{ textAlign: 'center', padding: '1.5rem 0', color: '#64748b', fontSize: '0.9rem' }}>
                 <CheckCircle2 size={32} color="#22c55e" style={{ margin: '0 auto 0.5rem auto' }} />
