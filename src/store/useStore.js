@@ -17,13 +17,13 @@ export const useStore = create(
     (set, get) => ({
       // BUSINESS CONFIG & PERSONALIZATION
       businessConfig: {
-        businessName: 'Mi Complejo de Cabañas',
+        businessName: 'Cabañas Manuara',
         administratorName: 'Administrador Principal',
-        primaryColor: '#2c4c3b',
-        contactPhone: '',
-        contactEmail: '',
-        logoUrl: '',
-        isSetupCompleted: false
+        primaryColor: '#8C5A32',
+        contactPhone: '+56 9 8456 2244',
+        contactEmail: 'cabanasmanuara@gmail.com',
+        logoUrl: '/images/logo_manuara.png',
+        isSetupCompleted: true
       },
       updateBusinessConfig: (newConfig) => set((state) => ({
         businessConfig: { ...state.businessConfig, ...newConfig }

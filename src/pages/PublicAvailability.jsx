@@ -238,16 +238,10 @@ export default function PublicAvailability() {
       {/* NAVBAR DE NAVEGACIÓN PRINCIPAL */}
       <header className="public-header glass-panel">
         <div className="public-header-brand">
-          {businessConfig.logoUrl ? (
-            <img src={businessConfig.logoUrl} alt="Cabañas Manuara Logo" className="public-brand-logo" />
-          ) : (
-            <div className="public-brand-icon">
-              <Home size={26} color="var(--accent-primary)" />
-            </div>
-          )}
+          <img src="/images/logo_manuara.png" alt="Cabañas Manuara Logo" className="public-brand-logo" />
           <div>
-            <h1 className="public-brand-title">{businessConfig.businessName || 'Cabañas Manuara'}</h1>
-            <p className="public-brand-subtitle">Alojamiento Privado & Tours en Rapa Nui</p>
+            <h1 className="public-brand-title">Cabañas Manuara</h1>
+            <p className="public-brand-subtitle">Alojamiento & Rent a Car en Rapa Nui</p>
           </div>
         </div>
 
@@ -265,14 +259,6 @@ export default function PublicAvailability() {
             {copiedLink ? <Check size={16} color="var(--success)" /> : <Share2 size={16} />}
             <span>{copiedLink ? '¡Copiado!' : 'Compartir'}</span>
           </button>
-          
-          <a 
-            href="/login" 
-            className="btn-admin-access" 
-            title="Acceso restringido para administración"
-          >
-            🔒 Admin
-          </a>
         </div>
       </header>
 
@@ -282,10 +268,14 @@ export default function PublicAvailability() {
         <img src="/images/hero.jpg" alt="Cabañas Manuara en Rapa Nui" className="hero-bg-img" />
         
         <div className="hero-content">
-          <span className="hero-badge">🗿 Isla de Pascua • Rapa Nui</span>
-          <h2 className="hero-title">Tu refugio privado en el ombligo del mundo</h2>
+          <div className="hero-logo-badge">
+            <img src="/images/logo_manuara.png" alt="Logo Cabañas Manuara" className="hero-badge-logo" />
+            <span className="hero-badge">🗿 Isla de Pascua • Rapa Nui</span>
+          </div>
+
+          <h2 className="hero-title">Cabañas Manuara</h2>
           <p className="hero-subtitle">
-            Disfruta de cabañas independientes totalmente equipadas, arriendo de vehículos 4x4 para explorar la isla y traslados gratuitos desde el Aeropuerto Mataveri con collar de flores de bienvenida.
+            Disfruta de cabañas independientes totalmente equipadas, arriendo de vehículos para explorar la isla y traslados gratuitos desde el Aeropuerto Mataveri con el tradicional collar de flores de bienvenida.
           </p>
 
           <div className="hero-features-grid">
@@ -299,7 +289,7 @@ export default function PublicAvailability() {
             </div>
             <div className="hero-feature-pill">
               <Car size={16} color="#22c55e" />
-              <span>Arriendo de 4x4 Directo</span>
+              <span>Arriendo de Vehículos</span>
             </div>
             <div className="hero-feature-pill">
               <ShieldCheck size={16} color="#a855f7" />
@@ -355,9 +345,9 @@ export default function PublicAvailability() {
 
           <div className="info-card glass-panel">
             <div className="info-card-icon">🚗</div>
-            <h3>Movilidad & Tours Directos</h3>
+            <h3>Arriendo de Vehículos & Tours</h3>
             <p>
-              Arriendo de vehículos 4x4 y excursiones guiadas con guías locales acreditados para conocer toda la isla sin preocupaciones.
+              Arriendo de vehículos y excursiones guiadas con guías locales acreditados para conocer toda la isla sin preocupaciones.
             </p>
           </div>
         </div>
@@ -378,7 +368,7 @@ export default function PublicAvailability() {
             <div key={c.id} className="cabin-showcase-card glass-panel">
               <div className="cabin-card-header">
                 <div className="cabin-icon-wrapper">
-                  <Home size={28} color="var(--accent-primary)" />
+                  <Home size={28} color="#8C5A32" />
                 </div>
                 <div className="cabin-badge-cap">
                   <Users size={15} /> Hasta {c.maxCapacity} Huéspedes
@@ -410,11 +400,11 @@ export default function PublicAvailability() {
         </div>
       </section>
 
-      {/* SECCIÓN 2: VEHÍCULOS 4X4 Y TOURS */}
+      {/* SECCIÓN 3: VEHÍCULOS Y TOURS */}
       <section id="servicios" className="public-section bg-section-alt glass-panel">
         <div className="section-header-box">
           <span className="section-subtitle">Servicios Adicionales</span>
-          <h2 className="section-title">Arriendo 4x4 & Tours Arqueológicos</h2>
+          <h2 className="section-title">Arriendo de Vehículos & Tours Arqueológicos</h2>
           <p className="section-desc">
             Complementa tu estadía en Cabañas Manuara explorando la isla a tu propio ritmo o acompañado de nuestros guías locales.
           </p>
@@ -423,9 +413,9 @@ export default function PublicAvailability() {
         <div className="services-grid">
           <div className="service-card">
             <div className="service-icon"><Car size={32} color="#3b82f6" /></div>
-            <h3>Arriendo de Vehículos 4x4</h3>
+            <h3>Arriendo de Vehículos</h3>
             <p>
-              Contamos con Jeeps y SUVs acondicionados para el terreno de Rapa Nui. Entrega directa en tus cabañas o en el aeropuerto.
+              Contamos con vehículos acondicionados para el terreno de Rapa Nui. Entrega directa en tus cabañas o en el aeropuerto.
             </p>
             <span className="service-tag">Jeeps & SUVs • Entrega Inmediata</span>
           </div>
@@ -450,21 +440,136 @@ export default function PublicAvailability() {
         </div>
       </section>
 
-      {/* SECCIÓN 3: COTIZADOR & BUSCADOR DE DISPONIBILIDAD */}
-      <section id="cotizador" className="public-section">
+      {/* SECCIÓN 4: NUESTRA UBICACIÓN & MAPA INTERACTIVO */}
+      <section id="ubicacion" className="public-section">
         <div className="section-header-box">
-          <span className="section-subtitle">Cotizador en Tiempo Real</span>
-          <h2 className="section-title">Consulta Disponibilidad y Pre-Reserva</h2>
+          <span className="section-subtitle">Encuéntranos en Hanga Roa</span>
+          <h2 className="section-title">Nuestra Ubicación</h2>
           <p className="section-desc">
-            Selecciona tus fechas de estadía y consulta de inmediato la disponibilidad y valores estimados para tus vacaciones.
+            Estratégicamente ubicados para tu comodidad y acceso a los principales atractivos
           </p>
         </div>
 
-        <main className="public-content-grid">
+        <div className="location-map-container glass-panel">
+          <div className="map-top-bar">
+            <a 
+              href="https://www.google.com/maps/search/?api=1&query=Caba%C3%B1as+Manuara+Hanga+Roa+Rapa+Nui" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-open-maps"
+            >
+              Abrir en Maps ↗
+            </a>
+          </div>
+
+          <div className="map-iframe-wrapper">
+            <iframe
+              title="Mapa de Ubicación de Cabañas Manuara en Rapa Nui"
+              src="https://maps.google.com/maps?q=Caba%C3%B1as%20Manuara%2C%20Avareipua%2C%20Hanga%20Roa%2C%20Isla%20de%20Pascua&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+
+          <div className="location-benefits-grid">
+            <div className="loc-benefit-item">
+              <span className="benefit-icon">✈️</span>
+              <div>
+                <strong>Aeropuerto Mataveri</strong>
+                <p>A solo 3 minutos en vehículo (traslado gratuito incluido).</p>
+              </div>
+            </div>
+            
+            <div className="loc-benefit-item">
+              <span className="benefit-icon">🌊</span>
+              <div>
+                <strong>Caleta Hanga Piko</strong>
+                <p>A pocos minutos a pie para contemplar la costa y actividades náuticas.</p>
+              </div>
+            </div>
+
+            <div className="loc-benefit-item">
+              <span className="benefit-icon">🛍️</span>
+              <div>
+                <strong>Centro de Hanga Roa</strong>
+                <p>Cercano a restaurantes, feria artesanal y supermercados.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="map-bottom-cta">
+            <a 
+              href="https://www.google.com/maps/search/?api=1&query=Caba%C3%B1as+Manuara+Hanga+Roa+Rapa+Nui" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-google-maps-full"
+            >
+              Abrir en Google Maps
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN 5: PREGUNTAS FRECUENTES (INFORMACIÓN ÚTIL PARA EL TURISTA) */}
+      <section className="public-section">
+        <div className="section-header-box">
+          <span className="section-subtitle">Información Útil</span>
+          <h2 className="section-title">Preguntas Frecuentes de nuestros Huéspedes</h2>
+          <p className="section-desc">
+            Resolvemos las dudas más comunes sobre tu viaje a Rapa Nui y la estadía en Cabañas Manuara.
+          </p>
+        </div>
+
+        <div className="faq-grid">
+          <div className="faq-card glass-panel">
+            <h4>✈️ ¿El traslado desde el aeropuerto está incluido?</h4>
+            <p>
+              ¡Sí! Te esperamos en el Aeropuerto Mataveri con el tradicional collar de flores de bienvenida y te trasladamos a las cabañas sin costo adicional, tanto a la llegada como a tu regreso.
+            </p>
+          </div>
+
+          <div className="faq-card glass-panel">
+            <h4>🕐 ¿Cuáles son las horas de Check-In y Check-Out?</h4>
+            <p>
+              El Check-In estándar es a partir de las 14:00 hrs y el Check-Out hasta las 11:00 hrs. Coordinamos con la llegada de tu vuelo LATAM para brindarte la mayor comodidad posible.
+            </p>
+          </div>
+
+          <div className="faq-card glass-panel">
+            <h4>📄 ¿Qué documentos se necesitan para viajar a Rapa Nui?</h4>
+            <p>
+              Debes contar con tu cédula o pasaporte vigente, el formulario FUI del Ministerio del Interior y la reserva de alojamiento confirmada (que te enviamos al concretar tu reserva).
+            </p>
+          </div>
+
+          <div className="faq-card glass-panel">
+            <h4>💳 ¿Cómo se realiza la confirmación de reserva?</h4>
+            <p>
+              Una vez enviada tu solicitud, la administración revisa la disponibilidad y se contacta contigo por WhatsApp para coordinar el abono del 50% vía transferencia o tarjeta.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN 6: COTIZADOR & BUSCADOR DE DISPONIBILIDAD (AL FINAL DE TODAS LAS SECCIONES) */}
+      <section id="cotizador" className="public-section cotizador-final-section">
+        <div className="section-header-box">
+          <span className="section-subtitle">Reserva Tu Estadía</span>
+          <h2 className="section-title">Consulta de Disponibilidad & Cotizador</h2>
+          <p className="section-desc">
+            Selecciona tus fechas de viaje y obtén tu cotización en tiempo real para vivir la experiencia Rapa Nui en Cabañas Manuara.
+          </p>
+        </div>
+
+        <main className="public-content-grid elegant-booking-engine">
           {/* PANEL IZQUIERDO: SELECCIÓN Y FORMULARIO */}
-          <section className="public-card glass-panel">
+          <section className="public-card glass-panel booking-form-card">
             <h2 className="public-card-title">
-              <Calendar size={22} color="var(--accent-primary)" /> 1. Fechas de Estadía y Pasajeros
+              <Calendar size={22} color="#8C5A32" /> 1. Fechas de Estadía y Pasajeros
             </h2>
 
             <div className="public-form-grid">
@@ -549,7 +654,7 @@ export default function PublicAvailability() {
             <hr className="public-divider" />
 
             <h2 className="public-card-title">
-              <Home size={22} color="var(--accent-primary)" /> 2. Selección de Cabaña / Alojamiento
+              <Home size={22} color="#8C5A32" /> 2. Selección de Cabaña / Alojamiento
             </h2>
 
             <div className="public-form-group">
@@ -596,7 +701,7 @@ export default function PublicAvailability() {
             <hr className="public-divider" />
 
             <h2 className="public-card-title">
-              <Car size={22} color="var(--accent-primary)" /> 3. Arriendo de Vehículo (Opcional)
+              <Car size={22} color="#8C5A32" /> 3. Arriendo de Vehículo (Opcional)
             </h2>
 
             {cars && cars.length > 0 ? (
@@ -704,7 +809,7 @@ export default function PublicAvailability() {
           {/* PANEL DERECHO: DESGLOSE DE COTIZACIÓN Y BOTÓN WHATSAPP */}
           <section className="public-card glass-panel summary-panel">
             <h2 className="public-card-title">
-              <Sparkles size={22} color="var(--accent-primary)" /> Cotización Estimada
+              <Sparkles size={22} color="#D97706" /> Cotización Estimada
             </h2>
 
             <div className="summary-details">
@@ -769,148 +874,24 @@ export default function PublicAvailability() {
         </main>
       </section>
 
-      {/* SECCIÓN NUESTRA UBICACIÓN & MAPA INTERACTIVO */}
-      <section id="ubicacion" className="public-section">
-        <div className="section-header-box">
-          <span className="section-subtitle">Encuéntranos en Hanga Roa</span>
-          <h2 className="section-title">Nuestra Ubicación</h2>
-          <p className="section-desc">
-            Estratégicamente ubicados para tu comodidad y acceso a los principales atractivos
-          </p>
-        </div>
-
-        <div className="location-map-container glass-panel">
-          <div className="map-top-bar">
-            <a 
-              href="https://www.google.com/maps/search/?api=1&query=Caba%C3%B1as+Manuara+Hanga+Roa+Rapa+Nui" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="btn-open-maps"
-            >
-              Abrir en Maps ↗
-            </a>
-          </div>
-
-          <div className="map-iframe-wrapper">
-            <iframe
-              title="Mapa de Ubicación de Cabañas Manuara en Rapa Nui"
-              src="https://maps.google.com/maps?q=Caba%C3%B1as%20Manuara%2C%20Avareipua%2C%20Hanga%20Roa%2C%20Isla%20de%20Pascua&t=&z=16&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="450"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-
-          <div className="location-benefits-grid">
-            <div className="loc-benefit-item">
-              <span className="benefit-icon">✈️</span>
-              <div>
-                <strong>Aeropuerto Mataveri</strong>
-                <p>A solo 3 minutos en vehículo (traslado gratuito incluido).</p>
-              </div>
-            </div>
-            
-            <div className="loc-benefit-item">
-              <span className="benefit-icon">🌊</span>
-              <div>
-                <strong>Caleta Hanga Piko</strong>
-                <p>A pocos minutos a pie para contemplar la costa y actividades náuticas.</p>
-              </div>
-            </div>
-
-            <div className="loc-benefit-item">
-              <span className="benefit-icon">🛍️</span>
-              <div>
-                <strong>Centro de Hanga Roa</strong>
-                <p>Cercano a restaurantes, feria artesanal y supermercados.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="map-bottom-cta">
-            <a 
-              href="https://www.google.com/maps/search/?api=1&query=Caba%C3%B1as+Manuara+Hanga+Roa+Rapa+Nui" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="btn-google-maps-full"
-            >
-              Abrir en Google Maps
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* SECCIÓN PREGUNTAS FRECUENTES (INFORMACIÓN ÚTIL PARA EL TURISTA) */}
-      <section className="public-section">
-        <div className="section-header-box">
-          <span className="section-subtitle">Información Útil</span>
-          <h2 className="section-title">Preguntas Frecuentes de nuestros Huéspedes</h2>
-          <p className="section-desc">
-            Resolvemos las dudas más comunes sobre tu viaje a Rapa Nui y la estadía en Cabañas Manuara.
-          </p>
-        </div>
-
-        <div className="faq-grid">
-          <div className="faq-card glass-panel">
-            <h4>✈️ ¿El traslado desde el aeropuerto está incluido?</h4>
-            <p>
-              ¡Sí! Te esperamos en el Aeropuerto Mataveri con el tradicional collar de flores de bienvenida y te trasladamos a las cabañas sin costo adicional, tanto a la llegada como a tu regreso.
-            </p>
-          </div>
-
-          <div className="faq-card glass-panel">
-            <h4>🕐 ¿Cuáles son las horas de Check-In y Check-Out?</h4>
-            <p>
-              El Check-In estándar es a partir de las 14:00 hrs y el Check-Out hasta las 11:00 hrs. Coordinamos con la llegada de tu vuelo LATAM para brindarte la mayor comodidad posible.
-            </p>
-          </div>
-
-          <div className="faq-card glass-panel">
-            <h4>📄 ¿Qué documentos se necesitan para viajar a Rapa Nui?</h4>
-            <p>
-              Debes contar con tu cédula o pasaporte vigente, el formulario FUI del Ministerio del Interior y la reserva de alojamiento confirmada (que te enviamos al concretar tu reserva).
-            </p>
-          </div>
-
-          <div className="faq-card glass-panel">
-            <h4>💳 ¿Cómo se realiza la confirmación de reserva?</h4>
-            <p>
-              Una vez enviada tu solicitud, la administración revisa la disponibilidad y se contacta contigo por WhatsApp para coordinar el abono del 50% vía transferencia o tarjeta.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* SECCIÓN CONTACTO Y PIE DE PÁGINA */}
       <footer id="contacto" className="public-footer glass-panel">
         <div className="footer-content-grid">
           <div className="footer-brand-col">
+            <img src="/images/logo_manuara.png" alt="Cabañas Manuara Logo" className="footer-brand-logo" />
             <h3 className="footer-brand-name">Cabañas Manuara</h3>
             <p className="footer-brand-text">
-              Tu mejor opción de alojamiento, arriendo 4x4 y excursiones guiadas en Rapa Nui. Vivimos la hospitalidad de nuestra isla.
+              Tu mejor opción de alojamiento, arriendo de vehículos y excursiones guiadas en Rapa Nui. Vivimos la hospitalidad de nuestra isla.
             </p>
           </div>
 
           <div className="footer-contact-col">
             <h4>Contacto & Reservas</h4>
             <ul className="footer-contact-list">
-              <li><Phone size={16} color="var(--accent-primary)" /> WhatsApp: +56 9 8456 2244</li>
-              <li><Mail size={16} color="var(--accent-primary)" /> Email: cabanasmanuara@gmail.com</li>
-              <li><Home size={16} color="var(--accent-primary)" /> Hanga Roa, Isla de Pascua - Rapa Nui, Chile</li>
+              <li><Phone size={16} color="#8C5A32" /> WhatsApp: +56 9 8456 2244</li>
+              <li><Mail size={16} color="#8C5A32" /> Email: cabanasmanuara@gmail.com</li>
+              <li><Home size={16} color="#8C5A32" /> Hanga Roa, Isla de Pascua - Rapa Nui, Chile</li>
             </ul>
-          </div>
-
-          <div className="footer-links-col">
-            <h4>Acceso Privado</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              Área de administración exclusiva para el equipo de Cabañas Manuara.
-            </p>
-            <a href="/login" className="btn-footer-admin">
-              🔒 Panel de Administración
-            </a>
           </div>
         </div>
 
