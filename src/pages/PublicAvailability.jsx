@@ -255,6 +255,7 @@ export default function PublicAvailability() {
           <a href="#inicio" className="nav-link">Inicio</a>
           <a href="#cabanas" className="nav-link">Cabañas</a>
           <a href="#servicios" className="nav-link">Vehículos & Tours</a>
+          <a href="#ubicacion" className="nav-link">Ubicación</a>
           <a href="#cotizador" className="nav-link btn-nav-highlight">Cotizar Disponibilidad</a>
           <a href="#contacto" className="nav-link">Contacto</a>
         </nav>
@@ -766,6 +767,80 @@ export default function PublicAvailability() {
             </div>
           </section>
         </main>
+      </section>
+
+      {/* SECCIÓN NUESTRA UBICACIÓN & MAPA INTERACTIVO */}
+      <section id="ubicacion" className="public-section">
+        <div className="section-header-box">
+          <span className="section-subtitle">Encuéntranos en Hanga Roa</span>
+          <h2 className="section-title">Nuestra Ubicación</h2>
+          <p className="section-desc">
+            Estratégicamente ubicados para tu comodidad y acceso a los principales atractivos
+          </p>
+        </div>
+
+        <div className="location-map-container glass-panel">
+          <div className="map-top-bar">
+            <a 
+              href="https://www.google.com/maps/search/?api=1&query=Caba%C3%B1as+Manuara+Hanga+Roa+Rapa+Nui" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-open-maps"
+            >
+              Abrir en Maps ↗
+            </a>
+          </div>
+
+          <div className="map-iframe-wrapper">
+            <iframe
+              title="Mapa de Ubicación de Cabañas Manuara en Rapa Nui"
+              src="https://maps.google.com/maps?q=Caba%C3%B1as%20Manuara%2C%20Avareipua%2C%20Hanga%20Roa%2C%20Isla%20de%20Pascua&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+
+          <div className="location-benefits-grid">
+            <div className="loc-benefit-item">
+              <span className="benefit-icon">✈️</span>
+              <div>
+                <strong>Aeropuerto Mataveri</strong>
+                <p>A solo 3 minutos en vehículo (traslado gratuito incluido).</p>
+              </div>
+            </div>
+            
+            <div className="loc-benefit-item">
+              <span className="benefit-icon">🌊</span>
+              <div>
+                <strong>Caleta Hanga Piko</strong>
+                <p>A pocos minutos a pie para contemplar la costa y actividades náuticas.</p>
+              </div>
+            </div>
+
+            <div className="loc-benefit-item">
+              <span className="benefit-icon">🛍️</span>
+              <div>
+                <strong>Centro de Hanga Roa</strong>
+                <p>Cercano a restaurantes, feria artesanal y supermercados.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="map-bottom-cta">
+            <a 
+              href="https://www.google.com/maps/search/?api=1&query=Caba%C3%B1as+Manuara+Hanga+Roa+Rapa+Nui" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-google-maps-full"
+            >
+              Abrir en Google Maps
+            </a>
+          </div>
+        </div>
       </section>
 
       {/* SECCIÓN PREGUNTAS FRECUENTES (INFORMACIÓN ÚTIL PARA EL TURISTA) */}
