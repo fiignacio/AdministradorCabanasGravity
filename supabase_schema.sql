@@ -27,7 +27,7 @@ CREATE TABLE public.reservations (
     "flightOut" text,
     "isBlock" boolean,
     "totalCost" numeric,
-    status text NOT NULL,
+    status text NOT NULL
 );
 
 -- Crear tabla de vehículos (Arriendos)

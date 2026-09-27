@@ -1,14 +1,15 @@
 import { useState, useMemo } from 'react';
 import { 
   Calendar, Users, Car, CheckCircle2, AlertCircle, 
-  Send, Home, ShieldCheck, Check, Share2, Sparkles, Moon, Info
+  Send, Home, ShieldCheck, Check, Share2, Sparkles, Moon, Info, X, Clock, FileCheck, Phone, Mail, MessageSquare
 } from 'lucide-react';
 import { format, differenceInDays, addDays, parseISO } from 'date-fns';
 import { useStore, getSupabase } from '../store/useStore';
+import { generateWhatsAppLink, generatePublicRequestMessage } from '../utils/whatsapp';
 import './PublicAvailability.css';
 
 export default function PublicAvailability() {
-  const { businessConfig, cabins, cars, prices, reservations, carReservations, syncConfig } = useStore();
+  const { businessConfig, cabins, cars, prices, reservations, carReservations, syncConfig, addReservation, addCarReservation } = useStore();
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const twoDaysLater = format(addDays(new Date(), 2), 'yyyy-MM-dd');
@@ -33,6 +34,13 @@ export default function PublicAvailability() {
 
   const [clientName, setClientName] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Estado Modal de Solicitud de Pre-Reserva
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [reqClientPhone, setReqClientPhone] = useState('');
+  const [reqEmail, setReqEmail] = useState('');
+  const [reqNotes, setReqNotes] = useState('');
+  const [requestSuccess, setRequestSuccess] = useState(false);
 
   // Fechas parseadas de Estadía
   const sDate = parseISO(startDateStr);
@@ -140,47 +148,89 @@ export default function PublicAvailability() {
     }
   };
 
-  // Solicitar por WhatsApp
-  const handleSendWhatsApp = () => {
-    const bPhone = businessConfig.contactPhone?.replace(/\D/g, '') || '56912345678';
-    const bName = businessConfig.businessName || 'Cabañas y Servicios';
+  // Abrir Modal de Solicitud de Pre-Reserva
+  const handleOpenRequestModal = () => {
+    setRequestSuccess(false);
+    setIsRequestModalOpen(true);
+  };
 
-    let msg = `¡Hola *${bName}*! 👋\n`;
-    if (clientName.trim()) {
-      msg += `Mi nombre es *${clientName.trim()}*.\n`;
+  // Enviar y Registrar Solicitud de Reserva (Estado PENDIENTE)
+  const handleConfirmRequest = (e) => {
+    e.preventDefault();
+    if (!clientName.trim() || !reqClientPhone.trim()) {
+      alert("Por favor ingresa tu nombre y teléfono/WhatsApp de contacto.");
+      return;
     }
-    msg += `Consulté disponibilidad desde su portal web y quisiera solicitar la siguiente reserva:\n\n`;
 
+    // 1. Guardar Reserva de Cabaña con estado 'pending' (Aprobación manual requerida)
+    let newResId = null;
     if (activeCabin) {
-      msg += `🏡 *Cabaña:* ${activeCabin.name}\n`;
+      newResId = addReservation({
+        cabinId: activeCabin.id,
+        clientName: clientName.trim(),
+        clientPhone: reqClientPhone.trim(),
+        startDate: startDateStr,
+        endDate: endDateStr,
+        adults: Number(adults),
+        childrenCount: Number(childrenCount),
+        babiesCount: Number(babiesCount),
+        totalCost: grandTotal,
+        depositAmount: deposit50,
+        paymentMethod: 'Por Confirmar',
+        status: 'pending', // ⚠️ Queda en estado PENDIENTE de revisión por Admin
+        notes: `Solicitud Web Pública | Email: ${reqEmail || 'N/I'} | Notas: ${reqNotes || 'Sin notas'}`
+      });
     }
-    msg += `📅 *Llegada:* ${format(sDate, 'dd/MM/yyyy')}\n`;
-    msg += `📅 *Salida:* ${format(eDate, 'dd/MM/yyyy')} (${nights} ${nights === 1 ? 'noche' : 'noches'})\n`;
-    msg += `👥 *Pasajeros:* ${adults} Adulto(s)`;
-    if (childrenCount > 0) msg += `, ${childrenCount} Niño(s)`;
-    if (babiesCount > 0) msg += `, ${babiesCount} Bebé(s)`;
-    msg += `\n`;
 
-    if (activeCar) {
-      msg += `🚗 *Vehículo:* ${activeCar.name} (${activeCar.plate || ''})\n`;
-      if (carRentalMode === 'stay') {
-        msg += `   ↳ *Período:* Toda la estadía (${carDays} ${carDays === 1 ? 'día' : 'días'})\n`;
-      } else {
-        msg += `   ↳ *Fechas Vehículo:* ${format(carSDate, 'dd/MM/yyyy')} al ${format(carEDate, 'dd/MM/yyyy')} (${carDays} ${carDays === 1 ? 'día' : 'días'})\n`;
-      }
+    // 2. Guardar Reserva de Vehículo con estado 'pending' (si aplica)
+    if (activeCar && selectedCarId !== 'none') {
+      addCarReservation({
+        carId: activeCar.id,
+        clientName: clientName.trim(),
+        clientPhone: reqClientPhone.trim(),
+        startDate: carEffectiveStartStr,
+        endDate: carEffectiveEndStr,
+        totalCost: carTotalCost,
+        depositAmount: Math.round(carTotalCost * 0.5),
+        paymentMethod: 'Por Confirmar',
+        status: 'pending',
+        linkedCabinReservationId: newResId || null,
+        notes: `Solicitud Web Pública | Email: ${reqEmail || 'N/I'}`
+      });
     }
 
-    msg += `\n💰 *Cotización Estimada:* $${grandTotal.toLocaleString('es-CL')}\n`;
-    msg += `💳 *Abono 50% para Reservar:* $${deposit50.toLocaleString('es-CL')}\n\n`;
-    msg += `¿Me confirman la disponibilidad para transferir el abono y concretar? Muchas gracias! 😊`;
-
-    // Registrar notificación interna
-    const summaryNotif = `${clientName || 'Cliente Web'} consultó ${activeCabin ? activeCabin.name : 'Alojamiento'} (${nights} noches, ${totalGuests} pax) ${activeCar ? '+ ' + activeCar.name : ''} por $${grandTotal.toLocaleString('es-CL')}.`;
+    // 3. Registrar Notificación Interna para el Administrador
+    const summaryNotif = `🔔 SOLICITUD PENDIENTE: ${clientName.trim()} solicita ${activeCabin ? activeCabin.name : 'Alojamiento'} (${nights} noches, ${totalGuests} pax) ${activeCar ? '+ ' + activeCar.name : ''} por $${grandTotal.toLocaleString('es-CL')}.`;
     sendAdminNotification(summaryNotif);
 
-    // Redirigir a WhatsApp
-    const waUrl = `https://wa.me/${bPhone}?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, '_blank');
+    // 4. Generar y Abrir Enlace de WhatsApp para el Administrador
+    const bPhone = businessConfig.contactPhone?.replace(/\D/g, '') || '56984562244';
+    const bName = businessConfig.businessName || 'Cabañas Manuara';
+
+    const waMsg = generatePublicRequestMessage({
+      clientName: clientName.trim(),
+      clientPhone: reqClientPhone.trim(),
+      cabinName: activeCabin ? activeCabin.name : 'Alojamiento',
+      startDate: format(sDate, 'dd/MM/yyyy'),
+      endDate: format(eDate, 'dd/MM/yyyy'),
+      nights,
+      adults,
+      childrenCount,
+      babiesCount,
+      carName: activeCar ? activeCar.name : null,
+      carDays,
+      grandTotal,
+      deposit50,
+      notes: reqNotes,
+      businessName: bName
+    });
+
+    const waUrl = generateWhatsAppLink(bPhone, waMsg);
+    if (waUrl) {
+      window.open(waUrl, '_blank');
+    }
+
+    setRequestSuccess(true);
   };
 
   return (
@@ -489,15 +539,15 @@ export default function PublicAvailability() {
           <button 
             type="button" 
             className="btn-whatsapp-reserve"
-            onClick={handleSendWhatsApp}
+            onClick={handleOpenRequestModal}
             disabled={!activeCabinIsAvailable || (selectedCarId !== 'none' && !activeCarIsAvailable)}
           >
-            <Send size={20} /> Solicitar Reserva por WhatsApp
+            <Send size={20} /> Solicitar Reserva (Pre-Reserva)
           </button>
 
           {!activeCabinIsAvailable && (
             <p className="unavailable-warning">
-              ⚠️ Selecciona fechas de cabaña con disponibilidad para enviar tu solicitud por WhatsApp.
+              ⚠️ Selecciona fechas de cabaña con disponibilidad para iniciar tu solicitud de reserva.
             </p>
           )}
 
@@ -509,10 +559,180 @@ export default function PublicAvailability() {
 
           <div className="public-footer-guarantee">
             <ShieldCheck size={18} color="var(--success)" />
-            <span>Garantía de respuesta rápida directamente con la administración.</span>
+            <span>Reserva en estado pendiente de aprobación manual por el administrador.</span>
           </div>
         </section>
       </main>
+
+      {/* MODAL DE SOLICITUD DE PRE-RESERVA (ESTADO PENDIENTE) */}
+      {isRequestModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 99999,
+          padding: '1rem'
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '20px',
+            maxWidth: '520px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            padding: '2rem',
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+            color: '#1e293b'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Clock size={22} color="var(--accent-primary)" />
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#0f172a', fontWeight: '700' }}>Solicitar Reserva de Cabaña</h3>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setIsRequestModalOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#64748b' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            {requestSuccess ? (
+              <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+                <FileCheck size={54} color="#22c55e" style={{ margin: '0 auto 1rem auto' }} />
+                <h4 style={{ fontSize: '1.25rem', color: '#0f172a', margin: '0 0 0.5rem 0' }}>¡Solicitud Registrada con Éxito!</h4>
+                <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5' }}>
+                  Tu reserva se ha registrado en estado <strong>PENDIENTE DE APROBACIÓN</strong>. Se ha abierto una ventana de WhatsApp para enviar los detalles directamente a la administración.
+                </p>
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '1rem', marginTop: '1rem', textAlign: 'left', fontSize: '0.85rem', color: '#166534' }}>
+                  ℹ️ <strong>Proceso Manual:</strong> El equipo de administración revisará tu solicitud y se comunicará contigo vía WhatsApp/Teléfono para coordinar el abono del 50% y confirmar definitivamente la reserva.
+                </div>
+                <button 
+                  type="button" 
+                  className="btn btn-primary"
+                  style={{ width: '100%', marginTop: '1.5rem', padding: '12px' }}
+                  onClick={() => setIsRequestModalOpen(false)}
+                >
+                  Entendido / Cerrar
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleConfirmRequest} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.88rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ color: '#64748b' }}>Alojamiento:</span>
+                    <strong style={{ color: '#0f172a' }}>{activeCabin ? activeCabin.name : 'Cabaña'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ color: '#64748b' }}>Fechas:</span>
+                    <strong style={{ color: '#0f172a' }}>{format(sDate, 'dd/MM/yyyy')} al {format(eDate, 'dd/MM/yyyy')} ({nights} {nights === 1 ? 'noche' : 'noches'})</strong>
+                  </div>
+                  {activeCar && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ color: '#64748b' }}>Vehículo:</span>
+                      <strong style={{ color: '#0f172a' }}>{activeCar.name}</strong>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px', paddingTop: '6px', borderTop: '1px dashed #cbd5e1' }}>
+                    <span style={{ color: '#0f172a', fontWeight: 'bold' }}>Total Cotizado:</span>
+                    <strong style={{ color: '#2563eb', fontSize: '1rem' }}>${grandTotal.toLocaleString('es-CL')}</strong>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>
+                    <Users size={15} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'text-bottom' }} />
+                    Nombre y Apellido <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    className="public-input" 
+                    placeholder="Ej: Juan Pérez" 
+                    value={clientName} 
+                    onChange={(e) => setClientName(e.target.value)} 
+                    required 
+                    style={{ background: '#f8fafc', color: '#0f172a' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>
+                    <Phone size={15} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'text-bottom' }} />
+                    Teléfono / WhatsApp de Contacto <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input 
+                    type="tel" 
+                    className="public-input" 
+                    placeholder="+56 9 1234 5678" 
+                    value={reqClientPhone} 
+                    onChange={(e) => setReqClientPhone(e.target.value)} 
+                    required 
+                    style={{ background: '#f8fafc', color: '#0f172a' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>
+                    <Mail size={15} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'text-bottom' }} />
+                    Correo Electrónico (Opcional)
+                  </label>
+                  <input 
+                    type="email" 
+                    className="public-input" 
+                    placeholder="correo@ejemplo.com" 
+                    value={reqEmail} 
+                    onChange={(e) => setReqEmail(e.target.value)} 
+                    style={{ background: '#f8fafc', color: '#0f172a' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>
+                    <MessageSquare size={15} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'text-bottom' }} />
+                    Notas / Consultas Especiales (Opcional)
+                  </label>
+                  <textarea 
+                    className="public-input" 
+                    rows={2} 
+                    placeholder="Ej: Necesitamos cuna de bebé o solicitar transfer aeropuerto..." 
+                    value={reqNotes} 
+                    onChange={(e) => setReqNotes(e.target.value)} 
+                    style={{ background: '#f8fafc', color: '#0f172a', resize: 'none' }}
+                  />
+                </div>
+
+                <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '0.75rem', fontSize: '0.8rem', color: '#b45309' }}>
+                  ⚠️ <strong>Aviso Importante:</strong> Esta solicitud guardará tu reserva en estado <strong>PENDIENTE</strong>. No se realizará ningún cobro ni aprobación automática hasta que la administración confirme la disponibilidad manualmente.
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsRequestModalOpen(false)}
+                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#f1f5f9', color: '#475569', fontWeight: '600', cursor: 'pointer' }}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    style={{ flex: 2, padding: '10px', borderRadius: '10px', border: 'none', background: '#25D366', color: '#ffffff', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  >
+                    <Send size={18} /> Enviar Solicitud por WhatsApp
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

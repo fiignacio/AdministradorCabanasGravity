@@ -43,10 +43,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Vista Pública Principal */}
-        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-        
-        {/* Portal Público de Consulta de Disponibilidad y Cotizador */}
+        {/* Vista Pública Principal (Portal de Disponibilidad y Reservas) */}
+        <Route path="/" element={<PublicAvailability />} />
         <Route path="/disponibilidad" element={<PublicAvailability />} />
         <Route path="/consultar" element={<PublicAvailability />} />
 
@@ -74,7 +72,7 @@ function App() {
         </Route>
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

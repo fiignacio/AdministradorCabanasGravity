@@ -373,6 +373,12 @@ const TourCalendar = () => {
                 </div>
               </div>
 
+              {resForm.date && resForm.date < new Date().toISOString().split('T')[0] && (
+                <div style={{ marginBottom: '1rem', padding: '0.6rem 0.8rem', borderRadius: '8px', background: 'rgba(241, 196, 15, 0.15)', border: '1px solid rgba(241, 196, 15, 0.4)', color: '#b7950b', fontSize: '0.85rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>📜 Modo Administrador: Registrando reserva de tour histórica (Fecha pasada)</span>
+                </div>
+              )}
+
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Cantidad de Pasajeros (Pax)</label>

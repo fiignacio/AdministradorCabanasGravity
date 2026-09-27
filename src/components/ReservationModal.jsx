@@ -409,6 +409,12 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
             </div>
           </div>
 
+          {formData.startDate && formData.startDate < new Date().toISOString().split('T')[0] && (
+            <div style={{ marginBottom: '1rem', padding: '0.6rem 0.8rem', borderRadius: '8px', background: 'rgba(241, 196, 15, 0.15)', border: '1px solid rgba(241, 196, 15, 0.4)', color: '#b7950b', fontSize: '0.85rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>📜 Modo Administrador: Registrando reserva histórica (Fecha pasada)</span>
+            </div>
+          )}
+
           {formData.startDate && (() => {
             const season = getSeason(formData.startDate);
             return (

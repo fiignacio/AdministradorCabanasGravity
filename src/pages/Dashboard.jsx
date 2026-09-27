@@ -5,9 +5,10 @@ import { parseSafeDate, formatSafeDate } from '../utils/dateUtils';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { reservations, cabins } = useStore();
+  const { reservations, cabins, updateReservation, deleteReservation } = useStore();
   const now = new Date();
   
+  const pendingRequests = reservations.filter(r => r.status === 'pending');
   const activeReservations = reservations.filter(r => r.status !== 'archived');
 
   const currentMonthReservations = activeReservations.filter(res => {
@@ -56,6 +57,60 @@ const Dashboard = () => {
     <div className="dashboard-page">
       <h1>Dashboard Operativo</h1>
       
+      {/* SOLICITUDES PENDIENTES DE COTIZACIÓN WEB */}
+      {pendingRequests.length > 0 && (
+        <div className="card glass-panel" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #f59e0b', background: 'rgba(245, 158, 11, 0.08)' }}>
+          <h2 style={{ color: '#d97706', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.2rem', marginBottom: '1rem' }}>
+            🔔 Solicitudes de Reserva Web Pendientes ({pendingRequests.length})
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {pendingRequests.map(req => {
+              const cabin = cabins.find(c => String(c.id) === String(req.cabinId));
+              return (
+                <div key={req.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', padding: '0.85rem 1rem', background: '#ffffff', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+                  <div>
+                    <strong style={{ color: '#0f172a', fontSize: '1rem' }}>{req.clientName || 'Cliente Web'}</strong>
+                    <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '2px' }}>
+                      🏠 <strong>{cabin?.name || 'Cabaña'}</strong> | 📅 {formatSafeDate(req.startDate, 'dd/MM/yyyy')} al {formatSafeDate(req.endDate, 'dd/MM/yyyy')} | 👥 {(Number(req.adults)||0) + (Number(req.childrenCount)||0)} Pax
+                    </div>
+                    {req.clientPhone && (
+                      <div style={{ fontSize: '0.82rem', color: '#2563eb', marginTop: '2px' }}>
+                        📞 WhatsApp/Tel: {req.clientPhone}
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ textAlign: 'right', marginRight: '0.5rem' }}>
+                      <div style={{ fontWeight: 'bold', color: '#16a34a', fontSize: '1.05rem' }}>${Number(req.totalCost || 0).toLocaleString('es-CL')}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Abono 50%: ${Number(req.depositAmount || 0).toLocaleString('es-CL')}</div>
+                    </div>
+                    <button 
+                      className="btn btn-primary" 
+                      style={{ padding: '6px 14px', fontSize: '0.85rem', background: '#16a34a', borderColor: '#16a34a' }}
+                      onClick={() => updateReservation(req.id, { status: 'confirmed' })}
+                    >
+                      ✓ Confirmar Reserva
+                    </button>
+                    <button 
+                      className="btn btn-outline" 
+                      style={{ padding: '6px 10px', fontSize: '0.85rem', color: '#dc2626', borderColor: '#fca5a5' }}
+                      onClick={() => {
+                        if (window.confirm('¿Rechazar esta solicitud de reserva?')) {
+                          deleteReservation(req.id);
+                        }
+                      }}
+                    >
+                      ✕ Rechazar
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
         
         <div className="stat-card glass-panel" style={{ borderLeft: '4px solid var(--accent-secondary)' }}>

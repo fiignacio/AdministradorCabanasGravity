@@ -94,3 +94,45 @@ export const generateInvitationMessage = (titular, pdfUrl = '', businessName = '
   msg += `Este documento es útil para agilizar tu llegada y certificar tu reserva. ¡Te esperamos!`;
   return msg;
 };
+
+export const generatePublicRequestMessage = ({
+  clientName,
+  clientPhone,
+  cabinName,
+  startDate,
+  endDate,
+  nights,
+  adults,
+  childrenCount,
+  babiesCount,
+  carName,
+  carDays,
+  grandTotal,
+  deposit50,
+  notes,
+  businessName = 'Cabañas Manuara'
+}) => {
+  let msg = `*SOLICITUD DE RESERVA - ${businessName.toUpperCase()}*\n`;
+  msg += `----------------------------------------\n`;
+  msg += `🏡 *Alojamiento:* ${cabinName}\n`;
+  msg += `📅 *Check-In:* ${startDate}\n`;
+  msg += `📅 *Check-Out:* ${endDate} (${nights} ${nights === 1 ? 'noche' : 'noches'})\n`;
+  msg += `👥 *Pasajeros:* ${adults} Adultos`;
+  if (childrenCount > 0) msg += `, ${childrenCount} Niños`;
+  if (babiesCount > 0) msg += `, ${babiesCount} Bebés`;
+  msg += `\n`;
+  if (carName) {
+    msg += `🚗 *Vehículo Solicitado:* ${carName} (${carDays} ${carDays === 1 ? 'día' : 'días'})\n`;
+  }
+  msg += `💰 *Total Estimado:* $${grandTotal.toLocaleString('es-CL')}\n`;
+  msg += `💳 *Abono 50% Sugerido:* $${deposit50.toLocaleString('es-CL')}\n`;
+  msg += `----------------------------------------\n`;
+  msg += `👤 *Cliente:* ${clientName || 'No especificado'}\n`;
+  msg += `📞 *Teléfono:* ${clientPhone || 'No especificado'}\n`;
+  if (notes) {
+    msg += `📝 *Notas / Solicitudes:* ${notes}\n`;
+  }
+  msg += `----------------------------------------\n`;
+  msg += `⚠️ *Estado:* Solicitud Pendiente de Confirmación por Administración`;
+  return msg;
+};

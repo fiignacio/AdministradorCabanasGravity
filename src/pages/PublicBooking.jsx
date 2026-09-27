@@ -9,7 +9,7 @@ import './PublicBooking.css';
 
 const PublicBooking = () => {
   const navigate = useNavigate();
-  const { cars, tours } = useStore();
+  const { cabins, reservations, prices } = useStore();
   
   const [startDate, setStartDate] = useState(formatSafeDate(new Date(), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(formatSafeDate(addDays(new Date(), 3), 'yyyy-MM-dd'));
@@ -30,14 +30,14 @@ const PublicBooking = () => {
 
     const totalGuests = adults + children;
     
-    const results = cars.map(cabin => {
+    const results = (cabins || []).map(cabin => {
       // Filtrar por capacidad
       if (cabin.maxCapacity < totalGuests) {
         return { cabin, available: false, reason: 'Capacidad excedida' };
       }
 
       // Buscar conflictos de reservas
-      const hasConflict = reservations.some(res => {
+      const hasConflict = (reservations || []).some(res => {
         if (res.cabinId !== cabin.id) return false;
         
         const resStart = startOfDay(parseSafeDate(res.startDate));

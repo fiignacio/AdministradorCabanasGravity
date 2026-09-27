@@ -10,7 +10,7 @@ import { calculateReservationCost } from '../utils/pricing';
 import './Reservations.css';
 
 const Reservations = () => {
-  const { reservations, cabins, prices, deleteReservation, addReservation, updateReservation } = useStore();
+  const { reservations, cabins, prices, referrers, deleteReservation, addReservation, updateReservation } = useStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState(null);
   const [waModalOpen, setWaModalOpen] = useState(false);
@@ -308,10 +308,20 @@ const Reservations = () => {
                 if (res.childrenCount > 0) guestsArr.push(`${res.childrenCount} Niñ.`);
                 if (res.babiesCount > 0) guestsArr.push(`${res.babiesCount} Beb.`);
                 const guestsStr = guestsArr.join(', ') || '0';
+                const referrerObj = res.referrerId ? referrers?.find(r => r.id === res.referrerId) : null;
 
                 return (
-                  <tr key={res.id}>
-                    <td><strong>{res.clientName}</strong></td>
+                  <tr key={res.id} style={referrerObj ? { borderLeft: '4px solid #8b5cf6', background: 'rgba(139, 92, 246, 0.03)' } : {}}>
+                    <td>
+                      <strong>{res.clientName}</strong>
+                      {referrerObj && (
+                        <div style={{ marginTop: '2px' }}>
+                          <span style={{ fontSize: '0.72rem', background: 'rgba(139, 92, 246, 0.12)', border: '1px solid rgba(139, 92, 246, 0.3)', color: '#7c3aed', padding: '2px 6px', borderRadius: '6px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            🤝 {referrerObj.name}
+                          </span>
+                        </div>
+                      )}
+                    </td>
                     <td>{getCabinName(res.cabinId)}</td>
                     <td>{formatSafeDate(res.startDate)}</td>
                     <td>{formatSafeDate(res.endDate)}</td>

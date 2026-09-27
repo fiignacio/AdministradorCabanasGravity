@@ -21,7 +21,7 @@ import './Calendar.css';
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [popover, setPopover] = useState({ visible: false, res: null, x: 0, y: 0 });
-  const { cabins, reservations, updateReservation } = useStore();
+  const { cabins, reservations, updateReservation, referrers } = useStore();
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -216,7 +216,20 @@ const Calendar = () => {
   return (
     <div className="card glass-panel calendar-page" style={{ userSelect: 'none' }}>
       <div className="calendar-header">
-        <h1>Calendario de Disponibilidad</h1>
+        <div>
+          <h1 style={{ margin: 0 }}>Calendario de Disponibilidad</h1>
+          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', fontSize: '0.78rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--text-secondary)' }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--accent-primary)', display: 'inline-block' }}></span> Directa
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#8b5cf6', fontWeight: 'bold' }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'linear-gradient(135deg, #8B5CF6, #6366F1)', display: 'inline-block' }}></span> 🤝 Referido / Agencia
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#64748b' }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#706258', display: 'inline-block' }}></span> 🔒 Bloqueo
+            </span>
+          </div>
+        </div>
         
         <div className="calendar-header-actions">
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -324,16 +337,19 @@ const Calendar = () => {
                   >
                     {dayReservations.map((res, index) => {
                       const isBlock = res.status === 'blocked';
+                      const isReferred = Boolean(res.referrerId && res.referrerId !== '' && res.referrerId !== 'none');
                       const resStart = startOfDay(parseSafeDate(res.startDate));
                       const resEnd = startOfDay(parseSafeDate(res.endDate));
                       const isStart = isSameDay(resStart, currentDay);
                       const isEnd = isSameDay(resEnd, currentDay);
                       const nights = Math.max(1, Math.ceil(Math.abs(resEnd - resStart) / (1000 * 60 * 60 * 24)));
 
-                      let barClasses = `reservation-bar ${isBlock ? 'blocked' : ''}`;
+                      let barClasses = `reservation-bar ${isBlock ? 'blocked' : ''} ${isReferred ? 'referred' : ''}`;
                       let customStyle = isBlock 
                         ? { background: 'linear-gradient(135deg, #706258, #3E312A)', cursor: 'pointer' } 
-                        : { backgroundColor: cabin.color || 'var(--accent-primary)', cursor: 'pointer' };
+                        : isReferred 
+                          ? { background: 'linear-gradient(135deg, #8B5CF6, #6366F1)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(139, 92, 246, 0.45)', border: '1px solid rgba(255, 255, 255, 0.4)' }
+                          : { backgroundColor: cabin.color || 'var(--accent-primary)', cursor: 'pointer' };
 
                       if (dayReservations.length > 1) {
                          if (isEnd) {
@@ -379,10 +395,11 @@ const Calendar = () => {
                                 overflow: 'hidden', 
                                 textOverflow: 'ellipsis', 
                                 verticalAlign: 'middle',
-                                paddingLeft: '2px'
+                                paddingLeft: '2px',
+                                fontWeight: isReferred ? '700' : '500'
                               }}
                             >
-                              {res.clientName} ({Number(res.adults || 0) + Number(res.childrenCount || 0) + Number(res.babiesCount || 0)} pax)
+                              {isReferred ? '🤝 ' : ''}{res.clientName} ({Number(res.adults || 0) + Number(res.childrenCount || 0) + Number(res.babiesCount || 0)} pax)
                             </span>
                           )}
                           {isStart && isBlock && <span className="reservation-client" style={{ flexShrink: 0, maxWidth: `calc(${nights} * 42px - 16px)`, display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', color: '#fff' }}>Bloqueado</span>}
@@ -417,6 +434,11 @@ const Calendar = () => {
           </div>
           {!popover.res.status || popover.res.status !== 'blocked' ? (
             <>
+              {popover.res.referrerId && (
+                <div style={{ fontSize: '0.78rem', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', color: '#8b5cf6', padding: '2px 6px', borderRadius: '6px', fontWeight: 'bold', marginBottom: '0.4rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  🤝 Referido: {referrers?.find(r => r.id === popover.res.referrerId)?.name || 'Agencia / Tercero'}
+                </div>
+              )}
               <div style={{ fontSize: '0.85rem', marginBottom: '0.25rem' }}>
                 Llegada: {formatSafeDate(popover.res.startDate, 'dd MMM yyyy')}
               </div>
