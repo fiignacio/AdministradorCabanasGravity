@@ -317,13 +317,58 @@ export default function PublicAvailability() {
         </div>
       </section>
 
-      {/* SECCIÓN 1: NUESTRAS CABAÑAS */}
+      {/* SECCIÓN 1: ¿POR QUÉ ELEGIR CABAÑAS MANUARA? (INFORMACIÓN DE VALOR) */}
+      <section className="public-section">
+        <div className="section-header-box">
+          <span className="section-subtitle">Tu Experiencia en Rapa Nui</span>
+          <h2 className="section-title">¿Por qué elegir Cabañas Manuara?</h2>
+          <p className="section-desc">
+            Nos dedicamos a brindarte una estadía inolvidable con la auténtica hospitalidad pascuense y servicios integrales para tu comodidad.
+          </p>
+        </div>
+
+        <div className="features-info-grid">
+          <div className="info-card glass-panel">
+            <div className="info-card-icon">🌸</div>
+            <h3>Bienvenida Rapa Nui</h3>
+            <p>
+              Te recibimos en el Aeropuerto Mataveri con el tradicional collar de flores y te trasladamos sin costo directo a tu cabaña.
+            </p>
+          </div>
+
+          <div className="info-card glass-panel">
+            <div className="info-card-icon">🌴</div>
+            <h3>Entorno Tranquilo & Céntrico</h3>
+            <p>
+              Ubicados en un entorno natural pacífico en Hanga Roa, a pocos minutos de restaurantes, artesanías y la costa.
+            </p>
+          </div>
+
+          <div className="info-card glass-panel">
+            <div className="info-card-icon">🏡</div>
+            <h3>Cabañas 100% Equipadas</h3>
+            <p>
+              Cocinas completas, terraza privada con vista al jardín, estacionamiento, agua caliente continua y conexión WiFi.
+            </p>
+          </div>
+
+          <div className="info-card glass-panel">
+            <div className="info-card-icon">🚗</div>
+            <h3>Movilidad & Tours Directos</h3>
+            <p>
+              Arriendo de vehículos 4x4 y excursiones guiadas con guías locales acreditados para conocer toda la isla sin preocupaciones.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN 2: NUESTRAS CABAÑAS */}
       <section id="cabanas" className="public-section">
         <div className="section-header-box">
           <span className="section-subtitle">Alojamientos Confortables</span>
           <h2 className="section-title">Nuestras Cabañas en Rapa Nui</h2>
           <p className="section-desc">
-            Espacios diseñados para tu descanso con total privacidad, terrazas con vista al jardín tropical y todas las comodidades de un hogar.
+            Espacios independientes diseñados para el descanso de parejas, familias y grupos en Isla de Pascua.
           </p>
         </div>
 
@@ -721,6 +766,47 @@ export default function PublicAvailability() {
             </div>
           </section>
         </main>
+      </section>
+
+      {/* SECCIÓN PREGUNTAS FRECUENTES (INFORMACIÓN ÚTIL PARA EL TURISTA) */}
+      <section className="public-section">
+        <div className="section-header-box">
+          <span className="section-subtitle">Información Útil</span>
+          <h2 className="section-title">Preguntas Frecuentes de nuestros Huéspedes</h2>
+          <p className="section-desc">
+            Resolvemos las dudas más comunes sobre tu viaje a Rapa Nui y la estadía en Cabañas Manuara.
+          </p>
+        </div>
+
+        <div className="faq-grid">
+          <div className="faq-card glass-panel">
+            <h4>✈️ ¿El traslado desde el aeropuerto está incluido?</h4>
+            <p>
+              ¡Sí! Te esperamos en el Aeropuerto Mataveri con el tradicional collar de flores de bienvenida y te trasladamos a las cabañas sin costo adicional, tanto a la llegada como a tu regreso.
+            </p>
+          </div>
+
+          <div className="faq-card glass-panel">
+            <h4>🕐 ¿Cuáles son las horas de Check-In y Check-Out?</h4>
+            <p>
+              El Check-In estándar es a partir de las 14:00 hrs y el Check-Out hasta las 11:00 hrs. Coordinamos con la llegada de tu vuelo LATAM para brindarte la mayor comodidad posible.
+            </p>
+          </div>
+
+          <div className="faq-card glass-panel">
+            <h4>📄 ¿Qué documentos se necesitan para viajar a Rapa Nui?</h4>
+            <p>
+              Debes contar con tu cédula o pasaporte vigente, el formulario FUI del Ministerio del Interior y la reserva de alojamiento confirmada (que te enviamos al concretar tu reserva).
+            </p>
+          </div>
+
+          <div className="faq-card glass-panel">
+            <h4>💳 ¿Cómo se realiza la confirmación de reserva?</h4>
+            <p>
+              Una vez enviada tu solicitud, la administración revisa la disponibilidad y se contacta contigo por WhatsApp para coordinar el abono del 50% vía transferencia o tarjeta.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* SECCIÓN CONTACTO Y PIE DE PÁGINA */}

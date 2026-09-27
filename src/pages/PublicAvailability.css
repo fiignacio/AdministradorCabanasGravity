@@ -474,8 +474,76 @@
 }
 
 /* ----------------------------------------------------
-   NUEVOS ESTILOS LANDING WEB CABAÑAS MANUARA
+   NUEVOS ESTILOS LANDING WEB CABAÑAS MANUARA (CÁLIDOS & INFORMATIVOS)
 ------------------------------------------------------ */
+.public-portal-container {
+  background: linear-gradient(180deg, #FAF6F0 0%, #F5EFE6 100%);
+  color: #1C1917;
+}
+
+.features-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-card {
+  padding: 1.75rem;
+  border-radius: 20px;
+  background: rgba(255, 252, 247, 0.9);
+  border: 1px solid rgba(217, 119, 6, 0.15);
+  box-shadow: 0 10px 25px -5px rgba(180, 83, 9, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.info-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.2rem;
+}
+
+.info-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #292524;
+  margin: 0;
+}
+
+.info-card p {
+  font-size: 0.88rem;
+  color: #57534E;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.faq-card {
+  padding: 1.75rem;
+  border-radius: 20px;
+  background: rgba(255, 252, 247, 0.9);
+  border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+.faq-card h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #8C5A32;
+  margin: 0 0 0.6rem 0;
+}
+
+.faq-card p {
+  font-size: 0.88rem;
+  color: #57534E;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .public-nav-menu {
   display: flex;
   align-items: center;
@@ -489,7 +557,7 @@
 }
 
 .nav-link {
-  color: var(--text-secondary);
+  color: #57534E;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
@@ -497,15 +565,15 @@
 }
 
 .nav-link:hover {
-  color: var(--accent-primary);
+  color: #B45309;
 }
 
 .btn-nav-highlight {
-  color: var(--accent-primary);
-  background: rgba(37, 211, 102, 0.1);
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  border: 1px solid rgba(37, 211, 102, 0.25);
+  color: #B45309;
+  background: rgba(217, 119, 6, 0.1);
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(217, 119, 6, 0.3);
 }
 
 .public-header-actions {
@@ -519,10 +587,10 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5rem 0.9rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--border-color);
+  background: rgba(140, 90, 50, 0.1);
+  border: 1px solid rgba(140, 90, 50, 0.25);
   border-radius: 10px;
-  color: var(--text-secondary);
+  color: #78350F;
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
@@ -530,7 +598,7 @@
 }
 
 .btn-admin-access:hover {
-  background: var(--accent-primary);
+  background: #8C5A32;
   color: #ffffff;
 }
 
@@ -562,7 +630,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.65) 60%, rgba(15, 23, 42, 0.4) 100%);
+  background: linear-gradient(135deg, rgba(28, 25, 23, 0.88) 0%, rgba(41, 37, 36, 0.72) 60%, rgba(28, 25, 23, 0.45) 100%);
   z-index: 1;
 }
 
