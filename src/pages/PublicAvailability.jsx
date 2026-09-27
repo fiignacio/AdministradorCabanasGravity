@@ -234,335 +234,529 @@ export default function PublicAvailability() {
   };
 
   return (
-    <div className="public-portal-container">
+    <div className="public-portal-container" id="inicio">
+      {/* NAVBAR DE NAVEGACIÓN PRINCIPAL */}
       <header className="public-header glass-panel">
         <div className="public-header-brand">
           {businessConfig.logoUrl ? (
-            <img src={businessConfig.logoUrl} alt="Logo" className="public-brand-logo" />
+            <img src={businessConfig.logoUrl} alt="Cabañas Manuara Logo" className="public-brand-logo" />
           ) : (
             <div className="public-brand-icon">
-              <Home size={24} color={businessConfig.primaryColor || '#2c4c3b'} />
+              <Home size={26} color="var(--accent-primary)" />
             </div>
           )}
           <div>
-            <h1 className="public-brand-title">{businessConfig.businessName || 'Consultar Disponibilidad'}</h1>
-            <p className="public-brand-subtitle">Consulta de Disponibilidad & Cotizador en Tiempo Real</p>
+            <h1 className="public-brand-title">{businessConfig.businessName || 'Cabañas Manuara'}</h1>
+            <p className="public-brand-subtitle">Alojamiento Privado & Tours en Rapa Nui</p>
           </div>
         </div>
 
-        <button className="btn-share-link" onClick={handleCopyLink} title="Copiar enlace de esta página">
-          {copiedLink ? <Check size={16} color="var(--success)" /> : <Share2 size={16} />}
-          <span>{copiedLink ? '¡Enlace Copiado!' : 'Compartir'}</span>
-        </button>
+        <nav className="public-nav-menu">
+          <a href="#inicio" className="nav-link">Inicio</a>
+          <a href="#cabanas" className="nav-link">Cabañas</a>
+          <a href="#servicios" className="nav-link">Vehículos & Tours</a>
+          <a href="#cotizador" className="nav-link btn-nav-highlight">Cotizar Disponibilidad</a>
+          <a href="#contacto" className="nav-link">Contacto</a>
+        </nav>
+
+        <div className="public-header-actions">
+          <button className="btn-share-link" onClick={handleCopyLink} title="Copiar enlace de esta página">
+            {copiedLink ? <Check size={16} color="var(--success)" /> : <Share2 size={16} />}
+            <span>{copiedLink ? '¡Copiado!' : 'Compartir'}</span>
+          </button>
+          
+          <a 
+            href="/login" 
+            className="btn-admin-access" 
+            title="Acceso restringido para administración"
+          >
+            🔒 Admin
+          </a>
+        </div>
       </header>
 
-      <main className="public-content-grid">
-        {/* PANEL IZQUIERDO: SELECCIÓN Y FORMULARIO */}
-        <section className="public-card glass-panel">
-          <h2 className="public-card-title">
-            <Calendar size={22} color="var(--accent-primary)" /> 1. Fechas de Estadía y Pasajeros
-          </h2>
+      {/* HERO SECTION DE BIENVENIDA */}
+      <section className="hero-section glass-panel">
+        <div className="hero-overlay"></div>
+        <img src="/images/hero.jpg" alt="Cabañas Manuara en Rapa Nui" className="hero-bg-img" />
+        
+        <div className="hero-content">
+          <span className="hero-badge">🗿 Isla de Pascua • Rapa Nui</span>
+          <h2 className="hero-title">Tu refugio privado en el ombligo del mundo</h2>
+          <p className="hero-subtitle">
+            Disfruta de cabañas independientes totalmente equipadas, arriendo de vehículos 4x4 para explorar la isla y traslados gratuitos desde el Aeropuerto Mataveri con collar de flores de bienvenida.
+          </p>
 
-          <div className="public-form-grid">
-            <div className="public-form-group">
-              <label className="public-label">Fecha de Check-In (Llegada)</label>
-              <input 
-                type="date" 
-                className="public-input" 
-                value={startDateStr}
-                min={today}
-                onChange={(e) => {
-                  const newStart = e.target.value;
-                  setStartDateStr(newStart);
-                  if (newStart >= endDateStr) {
-                    const newEnd = format(addDays(parseISO(newStart), 1), 'yyyy-MM-dd');
+          <div className="hero-features-grid">
+            <div className="hero-feature-pill">
+              <Sparkles size={16} color="#eab308" />
+              <span>Traslado Aeropuerto Incluido</span>
+            </div>
+            <div className="hero-feature-pill">
+              <Home size={16} color="#3b82f6" />
+              <span>Cocina Equipada & WiFi</span>
+            </div>
+            <div className="hero-feature-pill">
+              <Car size={16} color="#22c55e" />
+              <span>Arriendo de 4x4 Directo</span>
+            </div>
+            <div className="hero-feature-pill">
+              <ShieldCheck size={16} color="#a855f7" />
+              <span>Atención Personalizada</span>
+            </div>
+          </div>
+
+          <div className="hero-actions">
+            <a href="#cotizador" className="btn-hero-primary">
+              <Calendar size={18} /> Consultar Disponibilidad
+            </a>
+            <a href="#cabanas" className="btn-hero-secondary">
+              <Home size={18} /> Ver Cabañas
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN 1: NUESTRAS CABAÑAS */}
+      <section id="cabanas" className="public-section">
+        <div className="section-header-box">
+          <span className="section-subtitle">Alojamientos Confortables</span>
+          <h2 className="section-title">Nuestras Cabañas en Rapa Nui</h2>
+          <p className="section-desc">
+            Espacios diseñados para tu descanso con total privacidad, terrazas con vista al jardín tropical y todas las comodidades de un hogar.
+          </p>
+        </div>
+
+        <div className="cabins-showcase-grid">
+          {cabins && cabins.map(c => (
+            <div key={c.id} className="cabin-showcase-card glass-panel">
+              <div className="cabin-card-header">
+                <div className="cabin-icon-wrapper">
+                  <Home size={28} color="var(--accent-primary)" />
+                </div>
+                <div className="cabin-badge-cap">
+                  <Users size={15} /> Hasta {c.maxCapacity} Huéspedes
+                </div>
+              </div>
+              <h3 className="cabin-card-name">{c.name}</h3>
+              <p className="cabin-card-desc">
+                Cabaña independiente en entorno natural con terraza privada, estacionamiento y todas las comodidades para tu estadía en Rapa Nui.
+              </p>
+              
+              <ul className="cabin-amenities-list">
+                <li><Check size={14} color="#22c55e" /> Cocina totalmente equipada</li>
+                <li><Check size={14} color="#22c55e" /> Baño privado con agua caliente</li>
+                <li><Check size={14} color="#22c55e" /> Traslado Aeropuerto Mataveri (Ida/Vuelta)</li>
+                <li><Check size={14} color="#22c55e" /> Conexión WiFi & Estacionamiento</li>
+              </ul>
+
+              <div className="cabin-card-footer">
+                <a 
+                  href="#cotizador" 
+                  className="btn-select-cabin"
+                  onClick={() => setSelectedCabinId(String(c.id))}
+                >
+                  Seleccionar esta Cabaña
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SECCIÓN 2: VEHÍCULOS 4X4 Y TOURS */}
+      <section id="servicios" className="public-section bg-section-alt glass-panel">
+        <div className="section-header-box">
+          <span className="section-subtitle">Servicios Adicionales</span>
+          <h2 className="section-title">Arriendo 4x4 & Tours Arqueológicos</h2>
+          <p className="section-desc">
+            Complementa tu estadía en Cabañas Manuara explorando la isla a tu propio ritmo o acompañado de nuestros guías locales.
+          </p>
+        </div>
+
+        <div className="services-grid">
+          <div className="service-card">
+            <div className="service-icon"><Car size={32} color="#3b82f6" /></div>
+            <h3>Arriendo de Vehículos 4x4</h3>
+            <p>
+              Contamos con Jeeps y SUVs acondicionados para el terreno de Rapa Nui. Entrega directa en tus cabañas o en el aeropuerto.
+            </p>
+            <span className="service-tag">Jeeps & SUVs • Entrega Inmediata</span>
+          </div>
+
+          <div className="service-card">
+            <div className="service-icon"><Sparkles size={32} color="#eab308" /></div>
+            <h3>Tours Arqueológicos Guiados</h3>
+            <p>
+              Descubre Ahu Tongariki, la cantera de moais de Rano Raraku, la aldea ceremonial de Orongo y la paradisíaca playa de Anakena.
+            </p>
+            <span className="service-tag">Guías Locales • Experiencia Única</span>
+          </div>
+
+          <div className="service-card">
+            <div className="service-icon"><ShieldCheck size={32} color="#22c55e" /></div>
+            <h3>Bienvenida Rapa Nui</h3>
+            <p>
+              Te esperamos en el Aeropuerto Mataveri con el tradicional collar de flores y te trasladamos de forma gratuita a tu cabaña.
+            </p>
+            <span className="service-tag">Incluido en tu Reserva</span>
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN 3: COTIZADOR & BUSCADOR DE DISPONIBILIDAD */}
+      <section id="cotizador" className="public-section">
+        <div className="section-header-box">
+          <span className="section-subtitle">Cotizador en Tiempo Real</span>
+          <h2 className="section-title">Consulta Disponibilidad y Pre-Reserva</h2>
+          <p className="section-desc">
+            Selecciona tus fechas de estadía y consulta de inmediato la disponibilidad y valores estimados para tus vacaciones.
+          </p>
+        </div>
+
+        <main className="public-content-grid">
+          {/* PANEL IZQUIERDO: SELECCIÓN Y FORMULARIO */}
+          <section className="public-card glass-panel">
+            <h2 className="public-card-title">
+              <Calendar size={22} color="var(--accent-primary)" /> 1. Fechas de Estadía y Pasajeros
+            </h2>
+
+            <div className="public-form-grid">
+              <div className="public-form-group">
+                <label className="public-label">Fecha de Check-In (Llegada)</label>
+                <input 
+                  type="date" 
+                  className="public-input" 
+                  value={startDateStr}
+                  min={today}
+                  onChange={(e) => {
+                    const newStart = e.target.value;
+                    setStartDateStr(newStart);
+                    if (newStart >= endDateStr) {
+                      const newEnd = format(addDays(parseISO(newStart), 1), 'yyyy-MM-dd');
+                      setEndDateStr(newEnd);
+                      if (carRentalMode === 'stay') {
+                        setCarStartDateStr(newStart);
+                        setCarEndDateStr(newEnd);
+                      }
+                    } else if (carRentalMode === 'stay') {
+                      setCarStartDateStr(newStart);
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="public-form-group">
+                <label className="public-label">Fecha de Check-Out (Salida)</label>
+                <input 
+                  type="date" 
+                  className="public-input" 
+                  value={endDateStr}
+                  min={format(addDays(sDate, 1), 'yyyy-MM-dd')}
+                  onChange={(e) => {
+                    const newEnd = e.target.value;
                     setEndDateStr(newEnd);
                     if (carRentalMode === 'stay') {
-                      setCarStartDateStr(newStart);
                       setCarEndDateStr(newEnd);
                     }
-                  } else if (carRentalMode === 'stay') {
-                    setCarStartDateStr(newStart);
-                  }
-                }}
-              />
+                  }}
+                />
+              </div>
             </div>
+
+            <div className="nights-badge">
+              <Moon size={16} /> <strong>{nights}</strong> {nights === 1 ? 'noche de estadía' : 'noches de estadía'} ({isHighSeason ? 'Temporada Alta' : 'Temporada Baja'})
+            </div>
+
+            <div className="public-form-group" style={{ marginTop: '1.2rem' }}>
+              <label className="public-label"><Users size={18} /> Cantidad de Pasajeros</label>
+              <div className="pax-counter-grid">
+                <div className="pax-counter-box">
+                  <span className="pax-type">Adultos</span>
+                  <div className="counter-controls">
+                    <button type="button" onClick={() => setAdults(Math.max(1, adults - 1))}>-</button>
+                    <span>{adults}</span>
+                    <button type="button" onClick={() => setAdults(adults + 1)}>+</button>
+                  </div>
+                </div>
+
+                <div className="pax-counter-box">
+                  <span className="pax-type">Niños</span>
+                  <div className="counter-controls">
+                    <button type="button" onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}>-</button>
+                    <span>{childrenCount}</span>
+                    <button type="button" onClick={() => setChildrenCount(childrenCount + 1)}>+</button>
+                  </div>
+                </div>
+
+                <div className="pax-counter-box">
+                  <span className="pax-type">Bebés</span>
+                  <div className="counter-controls">
+                    <button type="button" onClick={() => setBabiesCount(Math.max(0, babiesCount - 1))}>-</button>
+                    <span>{babiesCount}</span>
+                    <button type="button" onClick={() => setBabiesCount(babiesCount + 1)}>+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr className="public-divider" />
+
+            <h2 className="public-card-title">
+              <Home size={22} color="var(--accent-primary)" /> 2. Selección de Cabaña / Alojamiento
+            </h2>
 
             <div className="public-form-group">
-              <label className="public-label">Fecha de Check-Out (Salida)</label>
-              <input 
-                type="date" 
-                className="public-input" 
-                value={endDateStr}
-                min={format(addDays(sDate, 1), 'yyyy-MM-dd')}
-                onChange={(e) => {
-                  const newEnd = e.target.value;
-                  setEndDateStr(newEnd);
-                  if (carRentalMode === 'stay') {
-                    setCarEndDateStr(newEnd);
-                  }
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="nights-badge">
-            <Moon size={16} /> <strong>{nights}</strong> {nights === 1 ? 'noche de estadía' : 'noches de estadía'} ({isHighSeason ? 'Temporada Alta' : 'Temporada Baja'})
-          </div>
-
-          <div className="public-form-group" style={{ marginTop: '1.2rem' }}>
-            <label className="public-label"><Users size={18} /> Cantidad de Pasajeros</label>
-            <div className="pax-counter-grid">
-              <div className="pax-counter-box">
-                <span className="pax-type">Adultos</span>
-                <div className="counter-controls">
-                  <button type="button" onClick={() => setAdults(Math.max(1, adults - 1))}>-</button>
-                  <span>{adults}</span>
-                  <button type="button" onClick={() => setAdults(adults + 1)}>+</button>
-                </div>
-              </div>
-
-              <div className="pax-counter-box">
-                <span className="pax-type">Niños</span>
-                <div className="counter-controls">
-                  <button type="button" onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}>-</button>
-                  <span>{childrenCount}</span>
-                  <button type="button" onClick={() => setChildrenCount(childrenCount + 1)}>+</button>
-                </div>
-              </div>
-
-              <div className="pax-counter-box">
-                <span className="pax-type">Bebés</span>
-                <div className="counter-controls">
-                  <button type="button" onClick={() => setBabiesCount(Math.max(0, babiesCount - 1))}>-</button>
-                  <span>{babiesCount}</span>
-                  <button type="button" onClick={() => setBabiesCount(babiesCount + 1)}>+</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <hr className="public-divider" />
-
-          <h2 className="public-card-title">
-            <Home size={22} color="var(--accent-primary)" /> 2. Selección de Cabaña / Alojamiento
-          </h2>
-
-          <div className="public-form-group">
-            <select 
-              className="public-input" 
-              value={selectedCabinId} 
-              onChange={(e) => setSelectedCabinId(e.target.value)}
-            >
-              <option value="all">🌟 Seleccionar la mejor opción disponible automáticamente</option>
-              {cabins.map(cabin => {
-                const avail = isCabinAvailable(cabin.id);
-                return (
-                  <option key={cabin.id} value={cabin.id}>
-                    {avail ? '✅ ' : '❌ [NO DISPONIBLE] '} {cabin.name} (Capacidad: {cabin.maxCapacity} pax)
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-          {activeCabin && (
-            <div className={`availability-status-box ${activeCabinIsAvailable ? 'available' : 'unavailable'}`}>
-              {activeCabinIsAvailable ? (
-                <>
-                  <CheckCircle2 size={22} color="var(--success)" />
-                  <div>
-                    <strong>¡Disponible para tus fechas!</strong>
-                    <p style={{ margin: 0, fontSize: '0.85rem' }}>{activeCabin.name} — Capacidad recomendada: {activeCabin.maxCapacity} personas.</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <AlertCircle size={22} color="var(--danger)" />
-                  <div>
-                    <strong>No disponible para las fechas seleccionadas</strong>
-                    <p style={{ margin: 0, fontSize: '0.85rem' }}>Por favor intenta seleccionar otro rango de fechas o prueba con otra cabaña.</p>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* OPCIONES ADICIONALES: VEHÍCULO */}
-          <hr className="public-divider" />
-
-          <h2 className="public-card-title">
-            <Car size={22} color="var(--accent-primary)" /> 3. Arriendo de Vehículo (Opcional)
-          </h2>
-
-          {cars && cars.length > 0 ? (
-            <div className="public-form-group">
-              <label className="public-label">Seleccionar Vehículo</label>
               <select 
-                className="public-input"
-                value={selectedCarId}
-                onChange={(e) => setSelectedCarId(e.target.value)}
+                className="public-input" 
+                value={selectedCabinId} 
+                onChange={(e) => setSelectedCabinId(e.target.value)}
               >
-                <option value="none">Sin arriendo de vehículo</option>
-                {cars.map(car => {
-                  const avail = isCarAvailable(car.id, carEffectiveStartStr, carEffectiveEndStr);
+                <option value="all">🌟 Seleccionar la mejor opción disponible automáticamente</option>
+                {cabins.map(cabin => {
+                  const avail = isCabinAvailable(cabin.id);
                   return (
-                    <option key={car.id} value={car.id} disabled={!avail}>
-                      {avail ? '✅ ' : '❌ [NO DISPONIBLE EN FECHAS] '} {car.name} ({car.plate}) - ${car.dailyRate.toLocaleString('es-CL')}/día
+                    <option key={cabin.id} value={cabin.id}>
+                      {avail ? '✅ ' : '❌ [NO DISPONIBLE] '} {cabin.name} (Capacidad: {cabin.maxCapacity} pax)
                     </option>
                   );
                 })}
               </select>
+            </div>
 
-              {/* SELECCIÓN DE PERÍODO DE ARRIENDO DE VEHÍCULO */}
-              {selectedCarId !== 'none' && (
-                <div style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                  <label className="public-label" style={{ marginBottom: '0.6rem' }}>Período de Arriendo del Vehículo:</label>
-                  
-                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.8rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.9rem' }}>
-                      <input 
-                        type="radio" 
-                        name="carMode" 
-                        value="stay" 
-                        checked={carRentalMode === 'stay'} 
-                        onChange={() => setCarRentalMode('stay')} 
-                      />
-                      <span>Mismo período de la estadía ({nights} {nights === 1 ? 'día' : 'días'})</span>
-                    </label>
-
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.9rem' }}>
-                      <input 
-                        type="radio" 
-                        name="carMode" 
-                        value="custom" 
-                        checked={carRentalMode === 'custom'} 
-                        onChange={() => {
-                          setCarRentalMode('custom');
-                          setCarStartDateStr(startDateStr);
-                          setCarEndDateStr(endDateStr);
-                        }} 
-                      />
-                      <span>Fechas específicas de arriendo</span>
-                    </label>
-                  </div>
-
-                  {carRentalMode === 'custom' && (
-                    <div className="public-form-grid" style={{ marginTop: '0.5rem' }}>
-                      <div className="public-form-group">
-                        <label className="public-label">Inicio Arriendo Vehículo</label>
-                        <input 
-                          type="date" 
-                          className="public-input" 
-                          value={carStartDateStr}
-                          min={today}
-                          onChange={(e) => {
-                            const newCarStart = e.target.value;
-                            setCarStartDateStr(newCarStart);
-                            if (newCarStart >= carEndDateStr) {
-                              setCarEndDateStr(format(addDays(parseISO(newCarStart), 1), 'yyyy-MM-dd'));
-                            }
-                          }}
-                        />
-                      </div>
-
-                      <div className="public-form-group">
-                        <label className="public-label">Fin Arriendo Vehículo</label>
-                        <input 
-                          type="date" 
-                          className="public-input" 
-                          value={carEndDateStr}
-                          min={format(addDays(carSDate, 1), 'yyyy-MM-dd')}
-                          onChange={(e) => setCarEndDateStr(e.target.value)}
-                        />
-                      </div>
+            {activeCabin && (
+              <div className={`availability-status-box ${activeCabinIsAvailable ? 'available' : 'unavailable'}`}>
+                {activeCabinIsAvailable ? (
+                  <>
+                    <CheckCircle2 size={22} color="var(--success)" />
+                    <div>
+                      <strong>¡Disponible para tus fechas!</strong>
+                      <p style={{ margin: 0, fontSize: '0.85rem' }}>{activeCabin.name} — Capacidad recomendada: {activeCabin.maxCapacity} personas.</p>
                     </div>
-                  )}
-
-                  {activeCar && !activeCarIsAvailable && (
-                    <p className="unavailable-warning" style={{ marginTop: '0.6rem', textAlign: 'left' }}>
-                      ❌ El vehículo {activeCar.name} ya está reservado para las fechas seleccionadas.
-                    </p>
-                  )}
-
-                  <div style={{ marginTop: '0.8rem', padding: '0.75rem 1rem', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#3b82f6', fontSize: '0.85rem' }}>
-                    <Info size={18} style={{ flexShrink: 0 }} />
-                    <span><strong>Aviso de disponibilidad:</strong> El vehículo seleccionado será revisado por la administración para confirmar su disponibilidad final.</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No hay vehículos registrados.</p>
-          )}
-        </section>
-
-        {/* PANEL DERECHO: DESGLOSE DE COTIZACIÓN Y BOTÓN WHATSAPP */}
-        <section className="public-card glass-panel summary-panel">
-          <h2 className="public-card-title">
-            <Sparkles size={22} color="var(--accent-primary)" /> Cotización Estimada
-          </h2>
-
-          <div className="summary-details">
-            <div className="summary-row">
-              <span>Alojamiento ({nights} {nights === 1 ? 'noche' : 'noches'}):</span>
-              <strong>${cabinTotalCost.toLocaleString('es-CL')}</strong>
-            </div>
-
-            {activeCar && (
-              <div className="summary-row">
-                <span>Vehículo ({activeCar.name} - {carDays} {carDays === 1 ? 'día' : 'días'}):</span>
-                <strong>${carTotalCost.toLocaleString('es-CL')}</strong>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle size={22} color="var(--danger)" />
+                    <div>
+                      <strong>No disponible para las fechas seleccionadas</strong>
+                      <p style={{ margin: 0, fontSize: '0.85rem' }}>Por favor intenta seleccionar otro rango de fechas o prueba con otra cabaña.</p>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
-            <div className="summary-total-box">
-              <div className="summary-total-label">Total Estimado de la Reserva</div>
-              <div className="summary-total-price">${grandTotal.toLocaleString('es-CL')}</div>
-              <div className="summary-deposit-note">
-                💳 Abono 50% para asegurar reserva: <strong>${deposit50.toLocaleString('es-CL')}</strong>
+            {/* OPCIONES ADICIONALES: VEHÍCULO */}
+            <hr className="public-divider" />
+
+            <h2 className="public-card-title">
+              <Car size={22} color="var(--accent-primary)" /> 3. Arriendo de Vehículo (Opcional)
+            </h2>
+
+            {cars && cars.length > 0 ? (
+              <div className="public-form-group">
+                <label className="public-label">Seleccionar Vehículo</label>
+                <select 
+                  className="public-input"
+                  value={selectedCarId}
+                  onChange={(e) => setSelectedCarId(e.target.value)}
+                >
+                  <option value="none">Sin arriendo de vehículo</option>
+                  {cars.map(car => {
+                    const avail = isCarAvailable(car.id, carEffectiveStartStr, carEffectiveEndStr);
+                    return (
+                      <option key={car.id} value={car.id} disabled={!avail}>
+                        {avail ? '✅ ' : '❌ [NO DISPONIBLE EN FECHAS] '} {car.name} ({car.plate}) - ${car.dailyRate.toLocaleString('es-CL')}/día
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* SELECCIÓN DE PERÍODO DE ARRIENDO DE VEHÍCULO */}
+                {selectedCarId !== 'none' && (
+                  <div style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                    <label className="public-label" style={{ marginBottom: '0.6rem' }}>Período de Arriendo del Vehículo:</label>
+                    
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.8rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.9rem' }}>
+                        <input 
+                          type="radio" 
+                          name="carMode" 
+                          value="stay" 
+                          checked={carRentalMode === 'stay'} 
+                          onChange={() => setCarRentalMode('stay')} 
+                        />
+                        <span>Mismo período de la estadía ({nights} {nights === 1 ? 'día' : 'días'})</span>
+                      </label>
+
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.9rem' }}>
+                        <input 
+                          type="radio" 
+                          name="carMode" 
+                          value="custom" 
+                          checked={carRentalMode === 'custom'} 
+                          onChange={() => {
+                            setCarRentalMode('custom');
+                            setCarStartDateStr(startDateStr);
+                            setCarEndDateStr(endDateStr);
+                          }} 
+                        />
+                        <span>Fechas específicas de arriendo</span>
+                      </label>
+                    </div>
+
+                    {carRentalMode === 'custom' && (
+                      <div className="public-form-grid" style={{ marginTop: '0.5rem' }}>
+                        <div className="public-form-group">
+                          <label className="public-label">Inicio Arriendo Vehículo</label>
+                          <input 
+                            type="date" 
+                            className="public-input" 
+                            value={carStartDateStr}
+                            min={today}
+                            onChange={(e) => {
+                              const newCarStart = e.target.value;
+                              setCarStartDateStr(newCarStart);
+                              if (newCarStart >= carEndDateStr) {
+                                setCarEndDateStr(format(addDays(parseISO(newCarStart), 1), 'yyyy-MM-dd'));
+                              }
+                            }}
+                          />
+                        </div>
+
+                        <div className="public-form-group">
+                          <label className="public-label">Fin Arriendo Vehículo</label>
+                          <input 
+                            type="date" 
+                            className="public-input" 
+                            value={carEndDateStr}
+                            min={format(addDays(carSDate, 1), 'yyyy-MM-dd')}
+                            onChange={(e) => setCarEndDateStr(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {activeCar && !activeCarIsAvailable && (
+                      <p className="unavailable-warning" style={{ marginTop: '0.6rem', textAlign: 'left' }}>
+                        ❌ El vehículo {activeCar.name} ya está reservado para las fechas seleccionadas.
+                      </p>
+                    )}
+
+                    <div style={{ marginTop: '0.8rem', padding: '0.75rem 1rem', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#3b82f6', fontSize: '0.85rem' }}>
+                      <Info size={18} style={{ flexShrink: 0 }} />
+                      <span><strong>Aviso de disponibilidad:</strong> El vehículo seleccionado será revisado por la administración para confirmar su disponibilidad final.</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No hay vehículos registrados.</p>
+            )}
+          </section>
+
+          {/* PANEL DERECHO: DESGLOSE DE COTIZACIÓN Y BOTÓN WHATSAPP */}
+          <section className="public-card glass-panel summary-panel">
+            <h2 className="public-card-title">
+              <Sparkles size={22} color="var(--accent-primary)" /> Cotización Estimada
+            </h2>
+
+            <div className="summary-details">
+              <div className="summary-row">
+                <span>Alojamiento ({nights} {nights === 1 ? 'noche' : 'noches'}):</span>
+                <strong>${cabinTotalCost.toLocaleString('es-CL')}</strong>
+              </div>
+
+              {activeCar && (
+                <div className="summary-row">
+                  <span>Vehículo ({activeCar.name} - {carDays} {carDays === 1 ? 'día' : 'días'}):</span>
+                  <strong>${carTotalCost.toLocaleString('es-CL')}</strong>
+                </div>
+              )}
+
+              <div className="summary-total-box">
+                <div className="summary-total-label">Total Estimado de la Reserva</div>
+                <div className="summary-total-price">${grandTotal.toLocaleString('es-CL')}</div>
+                <div className="summary-deposit-note">
+                  💳 Abono 50% para asegurar reserva: <strong>${deposit50.toLocaleString('es-CL')}</strong>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="client-contact-input-box" style={{ marginTop: '1.5rem' }}>
-            <label className="public-label">Tu Nombre (Opcional)</label>
-            <input 
-              type="text" 
-              className="public-input" 
-              placeholder="Ej: Juan Pérez" 
-              value={clientName} 
-              onChange={(e) => setClientName(e.target.value)} 
-            />
-          </div>
+            <div className="client-contact-input-box" style={{ marginTop: '1.5rem' }}>
+              <label className="public-label">Tu Nombre (Opcional)</label>
+              <input 
+                type="text" 
+                className="public-input" 
+                placeholder="Ej: Juan Pérez" 
+                value={clientName} 
+                onChange={(e) => setClientName(e.target.value)} 
+              />
+            </div>
 
-          <button 
-            type="button" 
-            className="btn-whatsapp-reserve"
-            onClick={handleOpenRequestModal}
-            disabled={!activeCabinIsAvailable || (selectedCarId !== 'none' && !activeCarIsAvailable)}
-          >
-            <Send size={20} /> Solicitar Reserva (Pre-Reserva)
-          </button>
+            <button 
+              type="button" 
+              className="btn-whatsapp-reserve"
+              onClick={handleOpenRequestModal}
+              disabled={!activeCabinIsAvailable || (selectedCarId !== 'none' && !activeCarIsAvailable)}
+            >
+              <Send size={20} /> Solicitar Reserva (Pre-Reserva)
+            </button>
 
-          {!activeCabinIsAvailable && (
-            <p className="unavailable-warning">
-              ⚠️ Selecciona fechas de cabaña con disponibilidad para iniciar tu solicitud de reserva.
+            {!activeCabinIsAvailable && (
+              <p className="unavailable-warning">
+                ⚠️ Selecciona fechas de cabaña con disponibilidad para iniciar tu solicitud de reserva.
+              </p>
+            )}
+
+            {selectedCarId !== 'none' && !activeCarIsAvailable && (
+              <p className="unavailable-warning">
+                ⚠️ El vehículo seleccionado no está disponible en las fechas indicadas.
+              </p>
+            )}
+
+            <div className="public-footer-guarantee">
+              <ShieldCheck size={18} color="var(--success)" />
+              <span>Reserva en estado pendiente de aprobación manual por el administrador.</span>
+            </div>
+          </section>
+        </main>
+      </section>
+
+      {/* SECCIÓN CONTACTO Y PIE DE PÁGINA */}
+      <footer id="contacto" className="public-footer glass-panel">
+        <div className="footer-content-grid">
+          <div className="footer-brand-col">
+            <h3 className="footer-brand-name">Cabañas Manuara</h3>
+            <p className="footer-brand-text">
+              Tu mejor opción de alojamiento, arriendo 4x4 y excursiones guiadas en Rapa Nui. Vivimos la hospitalidad de nuestra isla.
             </p>
-          )}
-
-          {selectedCarId !== 'none' && !activeCarIsAvailable && (
-            <p className="unavailable-warning">
-              ⚠️ El vehículo seleccionado no está disponible en las fechas indicadas.
-            </p>
-          )}
-
-          <div className="public-footer-guarantee">
-            <ShieldCheck size={18} color="var(--success)" />
-            <span>Reserva en estado pendiente de aprobación manual por el administrador.</span>
           </div>
-        </section>
-      </main>
+
+          <div className="footer-contact-col">
+            <h4>Contacto & Reservas</h4>
+            <ul className="footer-contact-list">
+              <li><Phone size={16} color="var(--accent-primary)" /> WhatsApp: +56 9 8456 2244</li>
+              <li><Mail size={16} color="var(--accent-primary)" /> Email: cabanasmanuara@gmail.com</li>
+              <li><Home size={16} color="var(--accent-primary)" /> Hanga Roa, Isla de Pascua - Rapa Nui, Chile</li>
+            </ul>
+          </div>
+
+          <div className="footer-links-col">
+            <h4>Acceso Privado</h4>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              Área de administración exclusiva para el equipo de Cabañas Manuara.
+            </p>
+            <a href="/login" className="btn-footer-admin">
+              🔒 Panel de Administración
+            </a>
+          </div>
+        </div>
+
+        <div className="footer-bottom-bar">
+          <p>© {new Date().getFullYear()} Cabañas Manuara. Todos los derechos reservados.</p>
+        </div>
+      </footer>
 
       {/* MODAL DE SOLICITUD DE PRE-RESERVA (ESTADO PENDIENTE) */}
       {isRequestModalOpen && (
