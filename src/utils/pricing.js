@@ -56,9 +56,9 @@ export function getLowSeasonText(seasonConfig) {
 
 /**
  * Calculates the total cost of a reservation.
- * Price is calculated per night using dynamic prices and seasonConfig.
+ * Price is calculated per night using dynamic prices, seasonConfig, and discountConfig.
  */
-export function calculateReservationCost(startDate, endDate, adultsCount, childrenCount, prices, seasonConfig) {
+export function calculateReservationCost(startDate, endDate, adultsCount, childrenCount, prices, seasonConfig, discountConfig) {
   if (!startDate || !endDate || !prices) return 0;
   
   const start = startOfDay(parseSafeDate(startDate));
@@ -71,15 +71,76 @@ export function calculateReservationCost(startDate, endDate, adultsCount, childr
     days.pop(); // Remove checkout day
   }
 
+  const nights = days.length;
+  const totalGuests = Number(adultsCount || 0) + Number(childrenCount || 0);
+
   let totalCost = 0;
 
   days.forEach(day => {
-    const adultPrice = isHighSeason(day, seasonConfig) ? Number(prices.highSeasonAdult) : Number(prices.lowSeasonAdult);
+    let adultPrice = isHighSeason(day, seasonConfig) ? Number(prices.highSeasonAdult) : Number(prices.lowSeasonAdult);
     
+    // Descuento por grupo de personas (si el administrador lo habilitó)
+    if (
+      discountConfig?.enableGroupDiscount &&
+      totalGuests >= Number(discountConfig.groupMinGuests || 10) &&
+      Number(discountConfig.groupRatePerAdult) > 0
+    ) {
+      adultPrice = Number(discountConfig.groupRatePerAdult);
+    }
+
     totalCost += (adultsCount * adultPrice);
     totalCost += (childrenCount * Number(prices.child));
   });
 
-  return totalCost;
+  // Descuento por cantidad de días / larga estadía (si el administrador lo habilitó)
+  if (
+    discountConfig?.enableDurationDiscount &&
+    nights >= Number(discountConfig.durationMinNights || 7) &&
+    Number(discountConfig.durationDiscountPercent) > 0
+  ) {
+    const discountAmount = (totalCost * Number(discountConfig.durationDiscountPercent)) / 100;
+    totalCost = Math.max(0, totalCost - discountAmount);
+  }
+
+  return Math.round(totalCost);
 }
+
+/**
+ * Calculates cost for non-date or date-based quote estimates with discountConfig.
+ */
+export function calculateQuoteCabinCost({
+  nights,
+  adults,
+  children,
+  isHighSeason,
+  prices,
+  discountConfig
+}) {
+  const totalGuests = Number(adults || 0) + Number(children || 0);
+  let adultPrice = isHighSeason ? Number(prices.highSeasonAdult) : Number(prices.lowSeasonAdult);
+
+  // Descuento por grupo (si el administrador lo habilitó)
+  if (
+    discountConfig?.enableGroupDiscount &&
+    totalGuests >= Number(discountConfig.groupMinGuests || 10) &&
+    Number(discountConfig.groupRatePerAdult) > 0
+  ) {
+    adultPrice = Number(discountConfig.groupRatePerAdult);
+  }
+
+  let subtotal = (adults * adultPrice * nights) + (children * Number(prices.child) * nights);
+
+  // Descuento por cantidad de días (si el administrador lo habilitó)
+  if (
+    discountConfig?.enableDurationDiscount &&
+    nights >= Number(discountConfig.durationMinNights || 7) &&
+    Number(discountConfig.durationDiscountPercent) > 0
+  ) {
+    const discount = (subtotal * Number(discountConfig.durationDiscountPercent)) / 100;
+    subtotal = Math.max(0, subtotal - discount);
+  }
+
+  return Math.round(subtotal);
+}
+
 

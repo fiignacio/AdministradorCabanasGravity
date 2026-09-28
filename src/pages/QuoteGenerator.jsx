@@ -5,11 +5,12 @@ import { format, differenceInDays, addDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useStore, getSupabase } from '../store/useStore';
 import { generateWhatsAppLink, generateQuoteMessage } from '../utils/whatsapp';
-import { isHighSeason as isHighSeasonUtil, getHighSeasonText, getLowSeasonText } from '../utils/pricing';
+import { isHighSeason as isHighSeasonUtil, getHighSeasonText, getLowSeasonText, calculateQuoteCabinCost } from '../utils/pricing';
 import './QuoteGenerator.css';
 
 export default function QuoteGenerator() {
-  const { prices, seasonConfig } = useStore();
+  const { prices, seasonConfig, discountConfig } = useStore();
+
   
   const [dateMode, setDateMode] = useState('dates'); // 'dates' | 'season'
   const [customNights, setCustomNights] = useState(3);
@@ -41,24 +42,25 @@ export default function QuoteGenerator() {
     return manualHighSeason;
   }, [dateMode, startDate, seasonConfig, manualHighSeason]);
 
-  // Pricing Logic from Global Store
-  let priceAdult = isHighSeason ? prices.highSeasonAdult : prices.lowSeasonAdult;
+  // Pricing Logic with Configurable Discounts from Global Store
+  const subtotal = useMemo(() => {
+    return calculateQuoteCabinCost({
+      nights,
+      adults,
+      children,
+      isHighSeason,
+      prices,
+      discountConfig
+    });
+  }, [nights, adults, children, isHighSeason, prices, discountConfig]);
 
-  // Descuento para grupos grandes (como en el original)
-  if (totalGuests >= 10) {
-    priceAdult = 25000;
-  }
-  const priceChild = prices.child;
-
-  const totalAdults = adults * priceAdult * nights;
-  const totalChildren = children * priceChild * nights;
   
   // Extra Car
   const carPricePerDay = carDays >= 3 ? 40000 : 45000;
   const totalCar = includeCar ? carDays * carPricePerDay : 0;
 
-  const subtotal = totalAdults + totalChildren;
   const grandTotal = subtotal + totalCar;
+
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CL', {

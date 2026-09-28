@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { Settings, Save, Building2, Palette, RefreshCw, Upload, Image as ImageIcon, Trash2, Plus, Edit2, X, Share2, Copy, ExternalLink, Check, Calendar, Sun, CloudSun } from 'lucide-react';
+import { Settings, Save, Building2, Palette, RefreshCw, Upload, Image as ImageIcon, Trash2, Plus, Edit2, X, Share2, Copy, ExternalLink, Check, Calendar, Sun, CloudSun, Tag, Percent, Users as UsersIcon } from 'lucide-react';
 import { MONTHS, getHighSeasonText, getLowSeasonText } from '../utils/pricing';
 import './Admin.css';
 
@@ -17,9 +17,11 @@ const Admin = () => {
   const { 
     prices, updatePrices, 
     seasonConfig, updateSeasonConfig,
+    discountConfig, updateDiscountConfig,
     cabins, addCabin, updateCabin, deleteCabin,
     businessConfig, updateBusinessConfig, resetSetup 
   } = useStore();
+
 
   const [copiedPublicLink, setCopiedPublicLink] = useState(false);
 
@@ -67,6 +69,27 @@ const Admin = () => {
     });
     setPriceSaved(false);
   };
+
+
+  // Discount Config State
+  const [discountForm, setDiscountForm] = useState({
+    enableGroupDiscount: discountConfig?.enableGroupDiscount ?? true,
+    groupMinGuests: discountConfig?.groupMinGuests || 10,
+    groupRatePerAdult: discountConfig?.groupRatePerAdult || 25000,
+    
+    enableDurationDiscount: discountConfig?.enableDurationDiscount ?? false,
+    durationMinNights: discountConfig?.durationMinNights || 7,
+    durationDiscountPercent: discountConfig?.durationDiscountPercent || 10
+  });
+  const [discountSaved, setDiscountSaved] = useState(false);
+
+  const handleSaveDiscounts = (e) => {
+    e.preventDefault();
+    updateDiscountConfig(discountForm);
+    setDiscountSaved(true);
+    setTimeout(() => setDiscountSaved(false), 3000);
+  };
+
 
   // Cabin Form State
   const [isCabinModalOpen, setIsCabinModalOpen] = useState(false);
@@ -374,6 +397,99 @@ const Admin = () => {
             </div>
           </form>
         </div>
+
+        {/* 3. Reglas de Descuento (Grupos y Larga Estadía) */}
+        <div className="card glass-panel admin-section">
+          <h2><Tag size={22} style={{ display: 'inline', marginRight: 8, color: '#16a085' }} /> Reglas de Descuento (Configurables)</h2>
+          <p className="text-secondary" style={{ fontSize: '0.85rem' }}>Activa o desactiva los descuentos automáticos por cantidad de personas o días de estadía.</p>
+          
+          <form onSubmit={handleSaveDiscounts} className="prices-form">
+            {/* Descuento por Grupos */}
+            <div style={{ background: 'rgba(255,255,255,0.4)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, cursor: 'pointer', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                <input 
+                  type="checkbox" 
+                  checked={discountForm.enableGroupDiscount}
+                  onChange={e => setDiscountForm({...discountForm, enableGroupDiscount: e.target.checked})}
+                  style={{ width: 18, height: 18, cursor: 'pointer' }}
+                />
+                <UsersIcon size={18} color="#2980b9" /> Descuento por Cantidad de Personas (Grupos Grandes)
+              </label>
+
+              {discountForm.enableGroupDiscount && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.8rem' }}>Mínimo de Personas</label>
+                    <input 
+                      type="number" 
+                      min="2"
+                      className="form-input" 
+                      value={discountForm.groupMinGuests} 
+                      onChange={e => setDiscountForm({...discountForm, groupMinGuests: Number(e.target.value)})} 
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.8rem' }}>Tarifa Especial Adulto ($)</label>
+                    <input 
+                      type="number" 
+                      min="0"
+                      className="form-input" 
+                      value={discountForm.groupRatePerAdult} 
+                      onChange={e => setDiscountForm({...discountForm, groupRatePerAdult: Number(e.target.value)})} 
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Descuento por Larga Estadía */}
+            <div style={{ background: 'rgba(255,255,255,0.4)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '1rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, cursor: 'pointer', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                <input 
+                  type="checkbox" 
+                  checked={discountForm.enableDurationDiscount}
+                  onChange={e => setDiscountForm({...discountForm, enableDurationDiscount: e.target.checked})}
+                  style={{ width: 18, height: 18, cursor: 'pointer' }}
+                />
+                <Percent size={18} color="#8e44ad" /> Descuento por Larga Estadía (Días / Noches)
+              </label>
+
+              {discountForm.enableDurationDiscount && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.8rem' }}>Mínimo de Noches</label>
+                    <input 
+                      type="number" 
+                      min="1"
+                      className="form-input" 
+                      value={discountForm.durationMinNights} 
+                      onChange={e => setDiscountForm({...discountForm, durationMinNights: Number(e.target.value)})} 
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.8rem' }}>% Descuento Total (%)</label>
+                    <input 
+                      type="number" 
+                      min="1"
+                      max="100"
+                      className="form-input" 
+                      value={discountForm.durationDiscountPercent} 
+                      onChange={e => setDiscountForm({...discountForm, durationDiscountPercent: Number(e.target.value)})} 
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
+              <button type="submit" className="btn btn-primary">
+                <Save size={18} /> Guardar Reglas de Descuento
+              </button>
+              {discountSaved && <span className="text-success save-msg">¡Descuentos guardados!</span>}
+            </div>
+          </form>
+        </div>
+
 
         {/* 3. Catálogo y Colores de Cabañas */}
         <div className="card glass-panel admin-section" style={{ gridColumn: '1 / -1' }}>

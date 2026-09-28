@@ -7,8 +7,9 @@ import { parseSafeDate } from '../utils/dateUtils';
 import './ReservationModal.css';
 
 const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) => {
-  const { cabins, prices, seasonConfig, addReservation, updateReservation, reservations, cars, carReservations, addCarReservation, updateCarReservation, deleteCarReservation, referrers, addReferrer } = useStore();
+  const { cabins, prices, seasonConfig, discountConfig, addReservation, updateReservation, reservations, cars, carReservations, addCarReservation, updateCarReservation, deleteCarReservation, referrers, addReferrer } = useStore();
   const navigate = useNavigate();
+
 
   
   const [carData, setCarData] = useState({
@@ -123,7 +124,8 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
         Number(formData.adults), 
         Number(formData.childrenCount),
         prices,
-        seasonConfig
+        seasonConfig,
+        discountConfig
       );
       
       // Auto-actualizar solo si el usuario no ha puesto un precio manual
@@ -138,7 +140,8 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
       setLastCalculatedCost(0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.startDate, formData.endDate, formData.adults, formData.childrenCount, formData.isBlock, prices, seasonConfig]);
+  }, [formData.startDate, formData.endDate, formData.adults, formData.childrenCount, formData.isBlock, prices, seasonConfig, discountConfig]);
+
 
 
   useEffect(() => {

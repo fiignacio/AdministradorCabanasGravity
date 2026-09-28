@@ -6,11 +6,12 @@ import {
 import { format, differenceInDays, addDays, parseISO } from 'date-fns';
 import { useStore, getSupabase } from '../store/useStore';
 import { generateWhatsAppLink, generatePublicRequestMessage } from '../utils/whatsapp';
-import { isHighSeason as isHighSeasonUtil, getHighSeasonText, getLowSeasonText } from '../utils/pricing';
+import { isHighSeason as isHighSeasonUtil, getHighSeasonText, getLowSeasonText, calculateQuoteCabinCost } from '../utils/pricing';
 import './PublicAvailability.css';
 
 export default function PublicAvailability() {
-  const { businessConfig, cabins, cars, prices, seasonConfig, reservations, carReservations, syncConfig, addReservation, addCarReservation } = useStore();
+  const { businessConfig, cabins, cars, prices, seasonConfig, discountConfig, reservations, carReservations, syncConfig, addReservation, addCarReservation } = useStore();
+
 
 
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -105,16 +106,20 @@ export default function PublicAvailability() {
 
   const activeCabinIsAvailable = activeCabin ? isCabinAvailable(activeCabin.id) : false;
 
-  // Precios y cotización de Cabaña
-  const cabinPricePerNight = useMemo(() => {
-    let ratePerAdult = isHighSeason ? prices.highSeasonAdult : prices.lowSeasonAdult;
-    if (totalGuests >= 10) ratePerAdult = 25000;
-    const totalAdultsCost = adults * ratePerAdult;
-    const totalChildrenCost = childrenCount * prices.child;
-    return totalAdultsCost + totalChildrenCost;
-  }, [isHighSeason, prices, adults, childrenCount, totalGuests]);
+  // Precios y cotización de Cabaña con Reglas de Descuento Configurables
+  const cabinTotalCost = useMemo(() => {
+    return calculateQuoteCabinCost({
+      nights,
+      adults,
+      children: childrenCount,
+      isHighSeason,
+      prices,
+      discountConfig
+    });
+  }, [nights, adults, childrenCount, isHighSeason, prices, discountConfig]);
 
-  const cabinTotalCost = cabinPricePerNight * nights;
+  const cabinPricePerNight = nights > 0 ? Math.round(cabinTotalCost / nights) : 0;
+
 
   // Cotización de Vehículo
   const activeCar = useMemo(() => {

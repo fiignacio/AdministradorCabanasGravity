@@ -50,6 +50,21 @@ export const useStore = create(
       updateSeasonConfig: (newSeasonConfig) => set((state) => ({
         seasonConfig: { ...state.seasonConfig, ...newSeasonConfig }
       })),
+
+      // CONFIGURACIÓN DE DESCUENTOS (POR GRUPO Y POR CANTIDAD DE DÍAS)
+      discountConfig: {
+        enableGroupDiscount: true,
+        groupMinGuests: 10,
+        groupRatePerAdult: 25000,
+        
+        enableDurationDiscount: false,
+        durationMinNights: 7,
+        durationDiscountPercent: 10,
+      },
+      updateDiscountConfig: (newDiscountConfig) => set((state) => ({
+        discountConfig: { ...state.discountConfig, ...newDiscountConfig }
+      })),
+
       
       // OFFLINE QUEUE
       offlineQueue: [],
