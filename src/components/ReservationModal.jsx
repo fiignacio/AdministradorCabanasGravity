@@ -7,8 +7,9 @@ import { parseSafeDate } from '../utils/dateUtils';
 import './ReservationModal.css';
 
 const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) => {
-  const { cabins, prices, addReservation, updateReservation, reservations, cars, carReservations, addCarReservation, updateCarReservation, deleteCarReservation, referrers, addReferrer } = useStore();
+  const { cabins, prices, seasonConfig, addReservation, updateReservation, reservations, cars, carReservations, addCarReservation, updateCarReservation, deleteCarReservation, referrers, addReferrer } = useStore();
   const navigate = useNavigate();
+
   
   const [carData, setCarData] = useState({
     hasCar: false,
@@ -121,7 +122,8 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
         formData.endDate, 
         Number(formData.adults), 
         Number(formData.childrenCount),
-        prices
+        prices,
+        seasonConfig
       );
       
       // Auto-actualizar solo si el usuario no ha puesto un precio manual
@@ -136,7 +138,8 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
       setLastCalculatedCost(0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.startDate, formData.endDate, formData.adults, formData.childrenCount, formData.isBlock, prices]);
+  }, [formData.startDate, formData.endDate, formData.adults, formData.childrenCount, formData.isBlock, prices, seasonConfig]);
+
 
   useEffect(() => {
     const sDate = carData.isFullStay ? formData.startDate : carData.startDate;

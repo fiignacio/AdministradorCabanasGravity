@@ -40,6 +40,16 @@ export const useStore = create(
       updatePrices: (newPrices) => set((state) => ({
         prices: { ...state.prices, ...newPrices }
       })),
+
+      // CONFIGURACIÓN DE TEMPORADAS
+      seasonConfig: {
+        highSeasonMonths: [11, 0, 1, 2, 3], // 11=Dic, 0=Ene, 1=Feb, 2=Mar, 3=Abr
+        highSeasonName: 'Temporada Alta',
+        lowSeasonName: 'Temporada Baja'
+      },
+      updateSeasonConfig: (newSeasonConfig) => set((state) => ({
+        seasonConfig: { ...state.seasonConfig, ...newSeasonConfig }
+      })),
       
       // OFFLINE QUEUE
       offlineQueue: [],

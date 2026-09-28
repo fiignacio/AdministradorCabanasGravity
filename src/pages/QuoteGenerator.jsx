@@ -1,22 +1,24 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { Download, Calendar, Users, Car, Moon, Sun } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import { format, differenceInDays, addDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useStore, getSupabase } from '../store/useStore';
 import { generateWhatsAppLink, generateQuoteMessage } from '../utils/whatsapp';
+import { isHighSeason as isHighSeasonUtil, getHighSeasonText, getLowSeasonText } from '../utils/pricing';
 import './QuoteGenerator.css';
 
 export default function QuoteGenerator() {
-  const { prices } = useStore();
+  const { prices, seasonConfig } = useStore();
   
   const [dateMode, setDateMode] = useState('dates'); // 'dates' | 'season'
   const [customNights, setCustomNights] = useState(3);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(addDays(new Date(), 3));
-  const [isHighSeason, setIsHighSeason] = useState(false);
+  const [manualHighSeason, setManualHighSeason] = useState(false);
   const [titular, setTitular] = useState('');
   const [clientPhone, setClientPhone] = useState('');
+
   
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
@@ -31,8 +33,17 @@ export default function QuoteGenerator() {
   const nights = dateMode === 'season' ? Math.max(1, Number(customNights)) : nightsCalculated;
   const totalGuests = adults + children + babies;
 
+  // Determinar temporada (Automática por fecha o Manual por temporada)
+  const isHighSeason = useMemo(() => {
+    if (dateMode === 'dates') {
+      return isHighSeasonUtil(startDate, seasonConfig);
+    }
+    return manualHighSeason;
+  }, [dateMode, startDate, seasonConfig, manualHighSeason]);
+
   // Pricing Logic from Global Store
   let priceAdult = isHighSeason ? prices.highSeasonAdult : prices.lowSeasonAdult;
+
   // Descuento para grupos grandes (como en el original)
   if (totalGuests >= 10) {
     priceAdult = 25000;
@@ -276,20 +287,36 @@ export default function QuoteGenerator() {
               </div>
             )}
 
-            <div className="form-group checkbox-group" style={{ marginTop: '1rem', background: isHighSeason ? 'rgba(var(--primary-color-rgb), 0.1)' : 'transparent', padding: '1rem', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', margin: 0 }}>
-                <input 
-                  type="checkbox" 
-                  checked={isHighSeason} 
-                  onChange={(e) => setIsHighSeason(e.target.checked)}
-                />
-                {isHighSeason ? <Sun size={20} color="var(--primary-color)"/> : <Moon size={20} color="var(--text-secondary)"/>}
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <strong>Temporada Alta</strong>
-                  <span className="text-secondary" style={{ fontSize: '0.85rem' }}>Utiliza la tarifa global de Temporada Alta</span>
+            <div className="form-group checkbox-group" style={{ marginTop: '1rem', background: isHighSeason ? 'rgba(230, 126, 34, 0.1)' : 'rgba(52, 152, 219, 0.1)', padding: '1rem', borderRadius: '10px', border: '1px solid var(--glass-border)' }}>
+              {dateMode === 'season' ? (
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', margin: 0 }}>
+                  <input 
+                    type="checkbox" 
+                    checked={manualHighSeason} 
+                    onChange={(e) => setManualHighSeason(e.target.checked)}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  {manualHighSeason ? <Sun size={20} color="#e67e22"/> : <Moon size={20} color="#3498db"/>}
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <strong>{manualHighSeason ? '☀️ Temporada Alta' : '🌙 Temporada Baja'}</strong>
+                    <span className="text-secondary" style={{ fontSize: '0.82rem' }}>
+                      {manualHighSeason ? getHighSeasonText(seasonConfig) : getLowSeasonText(seasonConfig)}
+                    </span>
+                  </div>
+                </label>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  {isHighSeason ? <Sun size={20} color="#e67e22"/> : <Moon size={20} color="#3498db"/>}
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <strong>{isHighSeason ? '☀️ Temporada Alta' : '🌙 Temporada Baja'}</strong>
+                    <span className="text-secondary" style={{ fontSize: '0.82rem' }}>
+                      {isHighSeason ? getHighSeasonText(seasonConfig) : getLowSeasonText(seasonConfig)} (calculado según Check-in)
+                    </span>
+                  </div>
                 </div>
-              </label>
+              )}
             </div>
+
           </div>
 
           <div className="card glass-panel" style={{ marginBottom: '1.5rem' }}>

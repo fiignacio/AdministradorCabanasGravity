@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { Settings, Save, Building2, Palette, RefreshCw, Upload, Image as ImageIcon, Trash2, Plus, Edit2, X, Share2, Copy, ExternalLink, Check } from 'lucide-react';
+import { Settings, Save, Building2, Palette, RefreshCw, Upload, Image as ImageIcon, Trash2, Plus, Edit2, X, Share2, Copy, ExternalLink, Check, Calendar, Sun, CloudSun } from 'lucide-react';
+import { MONTHS, getHighSeasonText, getLowSeasonText } from '../utils/pricing';
 import './Admin.css';
 
 const THEME_PRESETS = [
@@ -15,6 +16,7 @@ const THEME_PRESETS = [
 const Admin = () => {
   const { 
     prices, updatePrices, 
+    seasonConfig, updateSeasonConfig,
     cabins, addCabin, updateCabin, deleteCabin,
     businessConfig, updateBusinessConfig, resetSetup 
   } = useStore();
@@ -47,6 +49,24 @@ const Admin = () => {
     child: prices.child
   });
   const [priceSaved, setPriceSaved] = useState(false);
+
+  // Season Config State
+  const [seasonForm, setSeasonForm] = useState({
+    highSeasonMonths: seasonConfig?.highSeasonMonths || [11, 0, 1, 2, 3],
+    highSeasonName: seasonConfig?.highSeasonName || 'Temporada Alta',
+    lowSeasonName: seasonConfig?.lowSeasonName || 'Temporada Baja'
+  });
+
+  const toggleHighSeasonMonth = (monthId) => {
+    setSeasonForm(prev => {
+      const current = prev.highSeasonMonths || [];
+      const updated = current.includes(monthId)
+        ? current.filter(m => m !== monthId)
+        : [...current, monthId];
+      return { ...prev, highSeasonMonths: updated };
+    });
+    setPriceSaved(false);
+  };
 
   // Cabin Form State
   const [isCabinModalOpen, setIsCabinModalOpen] = useState(false);
@@ -82,9 +102,11 @@ const Admin = () => {
   const handleSavePrices = (e) => {
     e.preventDefault();
     updatePrices(pricesForm);
+    updateSeasonConfig(seasonForm);
     setPriceSaved(true);
     setTimeout(() => setPriceSaved(false), 3000);
   };
+
 
   const openNewCabin = () => {
     setCabinForm({ name: '', type: 'large', maxCapacity: 4, color: '#2980b9' });
@@ -276,12 +298,61 @@ const Admin = () => {
           </div>
         </div>
 
-        {/* 2. Tarifas Globales por Temporada de Cabañas */}
+        {/* 2. Tarifas Globales y Personalización de Temporadas */}
         <div className="card glass-panel admin-section">
-          <h2>Tarifas Globales por Temporada (Cabañas)</h2>
-          <p className="text-secondary" style={{ fontSize: '0.85rem' }}>Valores por noche utilizados para el cálculo automático de estadía en cabañas.</p>
+          <h2><Sun size={22} style={{ display: 'inline', marginRight: 8, color: '#e67e22' }} /> Tarifas y Configuración de Temporadas</h2>
+          <p className="text-secondary" style={{ fontSize: '0.85rem' }}>Personaliza los meses que corresponden a Temporada Alta / Baja y ajusta sus tarifas.</p>
           
           <form onSubmit={handleSavePrices} className="prices-form">
+            <div className="form-group" style={{ marginBottom: '1.2rem', background: 'rgba(255,255,255,0.4)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.06)' }}>
+              <label className="form-label" style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)' }}>
+                <Calendar size={16} color="var(--accent-primary)" /> Selecciona los Meses de Temporada Alta
+              </label>
+              <p className="text-secondary" style={{ fontSize: '0.78rem', margin: '2px 0 8px 0' }}>
+                Haz clic en los meses para activarlos o desactivarlos como Temporada Alta. Los meses no seleccionados serán automáticamente Temporada Baja.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '8px' }}>
+                {MONTHS.map(m => {
+                  const isHigh = seasonForm.highSeasonMonths.includes(m.id);
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => toggleHighSeasonMonth(m.id)}
+                      style={{
+                        padding: '8px 4px',
+                        borderRadius: '8px',
+                        border: isHigh ? '2px solid #e67e22' : '1px solid #cbd5e1',
+                        background: isHigh ? 'linear-gradient(135deg, #f39c12, #e67e22)' : '#ffffff',
+                        color: isHigh ? '#ffffff' : '#334155',
+                        fontWeight: isHigh ? 'bold' : 'normal',
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.2s ease',
+                        boxShadow: isHigh ? '0 2px 5px rgba(230, 126, 34, 0.3)' : 'none'
+                      }}
+                    >
+                      {m.short} {isHigh ? '☀️' : '❄️'}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Summary Badges */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '10px', fontSize: '0.8rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(230, 126, 34, 0.12)', padding: '6px 10px', borderRadius: '6px', borderLeft: '3px solid #e67e22', color: '#b45309' }}>
+                  <Sun size={14} color="#e67e22" />
+                  <span><strong>Temporada Alta:</strong> {getHighSeasonText(seasonForm)}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(52, 152, 219, 0.12)', padding: '6px 10px', borderRadius: '6px', borderLeft: '3px solid #3498db', color: '#1d4ed8' }}>
+                  <CloudSun size={14} color="#3498db" />
+                  <span><strong>Temporada Baja:</strong> {getLowSeasonText(seasonForm)}</span>
+                </div>
+              </div>
+            </div>
+
             <div className="form-group">
               <label className="form-label">Adulto Temporada Alta ($)</label>
               <input type="number" name="highSeasonAdult" className="form-input" value={pricesForm.highSeasonAdult} onChange={handlePriceChange} required />
@@ -295,10 +366,12 @@ const Admin = () => {
               <input type="number" name="child" className="form-input" value={pricesForm.child} onChange={handlePriceChange} required />
             </div>
             
-            <button type="submit" className="btn btn-primary">
-              <Save size={18} /> Guardar Tarifas
-            </button>
-            {priceSaved && <span className="text-success save-msg">¡Tarifas actualizadas!</span>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
+              <button type="submit" className="btn btn-primary">
+                <Save size={18} /> Guardar Tarifas y Temporadas
+              </button>
+              {priceSaved && <span className="text-success save-msg">¡Tarifas y temporadas actualizadas!</span>}
+            </div>
           </form>
         </div>
 

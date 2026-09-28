@@ -6,10 +6,12 @@ import {
 import { format, differenceInDays, addDays, parseISO } from 'date-fns';
 import { useStore, getSupabase } from '../store/useStore';
 import { generateWhatsAppLink, generatePublicRequestMessage } from '../utils/whatsapp';
+import { isHighSeason as isHighSeasonUtil, getHighSeasonText, getLowSeasonText } from '../utils/pricing';
 import './PublicAvailability.css';
 
 export default function PublicAvailability() {
-  const { businessConfig, cabins, cars, prices, reservations, carReservations, syncConfig, addReservation, addCarReservation } = useStore();
+  const { businessConfig, cabins, cars, prices, seasonConfig, reservations, carReservations, syncConfig, addReservation, addCarReservation } = useStore();
+
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const twoDaysLater = format(addDays(new Date(), 2), 'yyyy-MM-dd');
@@ -61,15 +63,15 @@ export default function PublicAvailability() {
   const carEffectiveEndStr = carRentalMode === 'stay' ? endDateStr : carEndDateStr;
   const carDays = dateMode === 'season' ? nights : Math.max(1, differenceInDays(carEDate, carSDate) || 1);
 
-  // Determinar temporada (Alta: Dic, Ene, Feb, Mar)
+  // Determinar temporada según configuración global de personalización
   const isHighSeason = useMemo(() => {
     if (dateMode === 'season') {
       return seasonType === 'high';
     }
     if (!startDateStr) return false;
-    const month = sDate.getMonth();
-    return month === 11 || month === 0 || month === 1 || month === 2;
-  }, [dateMode, seasonType, startDateStr, sDate]);
+    return isHighSeasonUtil(sDate, seasonConfig);
+  }, [dateMode, seasonType, startDateStr, sDate, seasonConfig]);
+
 
   // Verificar disponibilidad de una cabaña específica
   const isCabinAvailable = (cabinId) => {
@@ -678,8 +680,9 @@ export default function PublicAvailability() {
                     value={seasonType}
                     onChange={(e) => setSeasonType(e.target.value)}
                   >
-                    <option value="low">🌙 Temporada Baja (Abril a Noviembre)</option>
-                    <option value="high">☀️ Temporada Alta (Diciembre a Marzo)</option>
+                    <option value="low">🌙 Temporada Baja ({getLowSeasonText(seasonConfig)})</option>
+                    <option value="high">☀️ Temporada Alta ({getHighSeasonText(seasonConfig)})</option>
+
                   </select>
                 </div>
 
