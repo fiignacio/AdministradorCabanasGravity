@@ -42,7 +42,21 @@ export default function QuoteGenerator() {
     return manualHighSeason;
   }, [dateMode, startDate, seasonConfig, manualHighSeason]);
 
-  // Pricing Logic with Configurable Discounts from Global Store
+  // Tarifa por adulto según temporada y descuento de grupo configurado
+  let priceAdult = isHighSeason ? Number(prices.highSeasonAdult) : Number(prices.lowSeasonAdult);
+  if (
+    discountConfig?.enableGroupDiscount &&
+    totalGuests >= Number(discountConfig.groupMinGuests || 10) &&
+    Number(discountConfig.groupRatePerAdult) > 0
+  ) {
+    priceAdult = Number(discountConfig.groupRatePerAdult);
+  }
+  const priceChild = Number(prices.child);
+
+  const totalAdults = adults * priceAdult * nights;
+  const totalChildren = children * priceChild * nights;
+
+  // Subtotal Cabaña con descuento por larga estadía (si aplica)
   const subtotal = useMemo(() => {
     return calculateQuoteCabinCost({
       nights,
@@ -53,6 +67,7 @@ export default function QuoteGenerator() {
       discountConfig
     });
   }, [nights, adults, children, isHighSeason, prices, discountConfig]);
+
 
   
   // Extra Car
