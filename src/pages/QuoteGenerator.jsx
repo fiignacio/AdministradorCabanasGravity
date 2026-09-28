@@ -10,6 +10,8 @@ import './QuoteGenerator.css';
 export default function QuoteGenerator() {
   const { prices } = useStore();
   
+  const [dateMode, setDateMode] = useState('dates'); // 'dates' | 'season'
+  const [customNights, setCustomNights] = useState(3);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(addDays(new Date(), 3));
   const [isHighSeason, setIsHighSeason] = useState(false);
@@ -25,7 +27,8 @@ export default function QuoteGenerator() {
 
   const invoiceRef = useRef(null);
 
-  const nights = Math.max(1, differenceInDays(endDate, startDate) || 1);
+  const nightsCalculated = Math.max(1, differenceInDays(endDate, startDate) || 1);
+  const nights = dateMode === 'season' ? Math.max(1, Number(customNights)) : nightsCalculated;
   const totalGuests = adults + children + babies;
 
   // Pricing Logic from Global Store
@@ -199,26 +202,79 @@ export default function QuoteGenerator() {
               </div>
             </div>
 
-            <div className="form-row" style={{ marginTop: '1rem' }}>
-              <div className="form-group">
-                <label className="form-label">Check-in</label>
-                <input 
-                  type="date" 
-                  className="form-input"
-                  value={format(startDate, 'yyyy-MM-dd')}
-                  onChange={handleStartDateChange}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Check-out</label>
-                <input 
-                  type="date" 
-                  className="form-input"
-                  value={format(endDate, 'yyyy-MM-dd')}
-                  onChange={handleEndDateChange}
-                />
-              </div>
+            {/* SELECTOR DE MODO DE FECHA */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', background: 'rgba(0,0,0,0.04)', padding: '4px', borderRadius: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setDateMode('dates')}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: dateMode === 'dates' ? 'var(--accent-primary)' : 'transparent',
+                  color: dateMode === 'dates' ? '#ffffff' : 'var(--text-secondary)',
+                  fontWeight: '700',
+                  fontSize: '0.82rem',
+                  cursor: 'pointer'
+                }}
+              >
+                📅 Fechas Específicas
+              </button>
+              <button
+                type="button"
+                onClick={() => setDateMode('season')}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: dateMode === 'season' ? 'var(--accent-primary)' : 'transparent',
+                  color: dateMode === 'season' ? '#ffffff' : 'var(--text-secondary)',
+                  fontWeight: '700',
+                  fontSize: '0.82rem',
+                  cursor: 'pointer'
+                }}
+              >
+                ☀️ Por Temporada (Sin Fecha)
+              </button>
             </div>
+
+            {dateMode === 'dates' ? (
+              <div className="form-row" style={{ marginTop: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Check-in</label>
+                  <input 
+                    type="date" 
+                    className="form-input"
+                    value={format(startDate, 'yyyy-MM-dd')}
+                    onChange={handleStartDateChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Check-out</label>
+                  <input 
+                    type="date" 
+                    className="form-input"
+                    value={format(endDate, 'yyyy-MM-dd')}
+                    onChange={handleEndDateChange}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="form-row" style={{ marginTop: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Cantidad de Noches</label>
+                  <input 
+                    type="number" 
+                    className="form-input"
+                    min={1}
+                    value={customNights}
+                    onChange={(e) => setCustomNights(Math.max(1, parseInt(e.target.value) || 1))}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="form-group checkbox-group" style={{ marginTop: '1rem', background: isHighSeason ? 'rgba(var(--primary-color-rgb), 0.1)' : 'transparent', padding: '1rem', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', margin: 0 }}>

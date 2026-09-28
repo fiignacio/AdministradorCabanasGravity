@@ -14,6 +14,11 @@ export default function PublicAvailability() {
   const today = format(new Date(), 'yyyy-MM-dd');
   const twoDaysLater = format(addDays(new Date(), 2), 'yyyy-MM-dd');
 
+  // Modo de Cotización (Fechas fijas vs Por Temporada)
+  const [dateMode, setDateMode] = useState('dates'); // 'dates' | 'season'
+  const [seasonType, setSeasonType] = useState('low'); // 'low' | 'high'
+  const [customNights, setCustomNights] = useState(3);
+
   // Fechas de Cabaña / Estadía
   const [startDateStr, setStartDateStr] = useState(today);
   const [endDateStr, setEndDateStr] = useState(twoDaysLater);
@@ -45,7 +50,8 @@ export default function PublicAvailability() {
   // Fechas parseadas de Estadía
   const sDate = parseISO(startDateStr);
   const eDate = parseISO(endDateStr);
-  const nights = Math.max(1, differenceInDays(eDate, sDate) || 1);
+  const nightsCalculated = Math.max(1, differenceInDays(eDate, sDate) || 1);
+  const nights = dateMode === 'season' ? Math.max(1, Number(customNights)) : nightsCalculated;
   const totalGuests = adults + childrenCount + babiesCount;
 
   // Fechas parseadas de Vehículo
@@ -53,14 +59,17 @@ export default function PublicAvailability() {
   const carEDate = carRentalMode === 'stay' ? eDate : parseISO(carEndDateStr);
   const carEffectiveStartStr = carRentalMode === 'stay' ? startDateStr : carStartDateStr;
   const carEffectiveEndStr = carRentalMode === 'stay' ? endDateStr : carEndDateStr;
-  const carDays = Math.max(1, differenceInDays(carEDate, carSDate) || 1);
+  const carDays = dateMode === 'season' ? nights : Math.max(1, differenceInDays(carEDate, carSDate) || 1);
 
   // Determinar temporada (Alta: Dic, Ene, Feb, Mar)
   const isHighSeason = useMemo(() => {
+    if (dateMode === 'season') {
+      return seasonType === 'high';
+    }
     if (!startDateStr) return false;
     const month = sDate.getMonth();
     return month === 11 || month === 0 || month === 1 || month === 2;
-  }, [startDateStr, sDate]);
+  }, [dateMode, seasonType, startDateStr, sDate]);
 
   // Verificar disponibilidad de una cabaña específica
   const isCabinAvailable = (cabinId) => {
@@ -576,51 +585,136 @@ export default function PublicAvailability() {
               <Calendar size={22} color="#8C5A32" /> 1. Fechas de Estadía y Pasajeros
             </h2>
 
-            <div className="public-form-grid">
-              <div className="public-form-group">
-                <label className="public-label">Fecha de Check-In (Llegada)</label>
-                <input 
-                  type="date" 
-                  className="public-input" 
-                  value={startDateStr}
-                  min={today}
-                  onChange={(e) => {
-                    const newStart = e.target.value;
-                    setStartDateStr(newStart);
-                    if (newStart >= endDateStr) {
-                      const newEnd = format(addDays(parseISO(newStart), 1), 'yyyy-MM-dd');
-                      setEndDateStr(newEnd);
-                      if (carRentalMode === 'stay') {
-                        setCarStartDateStr(newStart);
-                        setCarEndDateStr(newEnd);
-                      }
-                    } else if (carRentalMode === 'stay') {
-                      setCarStartDateStr(newStart);
-                    }
-                  }}
-                />
-              </div>
+            {/* SELECTOR DE MODO DE COTIZACIÓN */}
+            <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', background: 'rgba(140, 90, 50, 0.08)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(140, 90, 50, 0.2)' }}>
+              <button
+                type="button"
+                onClick={() => setDateMode('dates')}
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: dateMode === 'dates' ? '#8C5A32' : 'transparent',
+                  color: dateMode === 'dates' ? '#ffffff' : '#57534E',
+                  fontWeight: '700',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                📅 Fechas Específicas
+              </button>
 
-              <div className="public-form-group">
-                <label className="public-label">Fecha de Check-Out (Salida)</label>
-                <input 
-                  type="date" 
-                  className="public-input" 
-                  value={endDateStr}
-                  min={format(addDays(sDate, 1), 'yyyy-MM-dd')}
-                  onChange={(e) => {
-                    const newEnd = e.target.value;
-                    setEndDateStr(newEnd);
-                    if (carRentalMode === 'stay') {
-                      setCarEndDateStr(newEnd);
-                    }
-                  }}
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => setDateMode('season')}
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: dateMode === 'season' ? '#8C5A32' : 'transparent',
+                  color: dateMode === 'season' ? '#ffffff' : '#57534E',
+                  fontWeight: '700',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                ☀️ Por Temporada (Sin Fecha)
+              </button>
             </div>
 
+            {dateMode === 'dates' ? (
+              <div className="public-form-grid">
+                <div className="public-form-group">
+                  <label className="public-label">Fecha de Check-In (Llegada)</label>
+                  <input 
+                    type="date" 
+                    className="public-input" 
+                    value={startDateStr}
+                    min={today}
+                    onChange={(e) => {
+                      const newStart = e.target.value;
+                      setStartDateStr(newStart);
+                      if (newStart >= endDateStr) {
+                        const newEnd = format(addDays(parseISO(newStart), 1), 'yyyy-MM-dd');
+                        setEndDateStr(newEnd);
+                        if (carRentalMode === 'stay') {
+                          setCarStartDateStr(newStart);
+                          setCarEndDateStr(newEnd);
+                        }
+                      } else if (carRentalMode === 'stay') {
+                        setCarStartDateStr(newStart);
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="public-form-group">
+                  <label className="public-label">Fecha de Check-Out (Salida)</label>
+                  <input 
+                    type="date" 
+                    className="public-input" 
+                    value={endDateStr}
+                    min={format(addDays(sDate, 1), 'yyyy-MM-dd')}
+                    onChange={(e) => {
+                      const newEnd = e.target.value;
+                      setEndDateStr(newEnd);
+                      if (carRentalMode === 'stay') {
+                        setCarEndDateStr(newEnd);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="public-form-grid">
+                <div className="public-form-group">
+                  <label className="public-label">Temporada Estimada</label>
+                  <select
+                    className="public-input"
+                    value={seasonType}
+                    onChange={(e) => setSeasonType(e.target.value)}
+                  >
+                    <option value="low">🌙 Temporada Baja (Abril a Noviembre)</option>
+                    <option value="high">☀️ Temporada Alta (Diciembre a Marzo)</option>
+                  </select>
+                </div>
+
+                <div className="public-form-group">
+                  <label className="public-label">Cantidad de Noches</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => setCustomNights(Math.max(1, customNights - 1))}
+                      style={{ width: '38px', height: '38px', borderRadius: '10px', border: '1px solid var(--border-color)', background: '#ffffff', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}
+                    >
+                      -
+                    </button>
+                    <input 
+                      type="number" 
+                      className="public-input" 
+                      style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.05rem' }}
+                      value={customNights}
+                      min={1}
+                      onChange={(e) => setCustomNights(Math.max(1, parseInt(e.target.value) || 1))}
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setCustomNights(customNights + 1)}
+                      style={{ width: '38px', height: '38px', borderRadius: '10px', border: '1px solid var(--border-color)', background: '#ffffff', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="nights-badge">
-              <Moon size={16} /> <strong>{nights}</strong> {nights === 1 ? 'noche de estadía' : 'noches de estadía'} ({isHighSeason ? 'Temporada Alta' : 'Temporada Baja'})
+              <Moon size={16} /> <strong>{nights}</strong> {nights === 1 ? 'noche estimada' : 'noches estimadas'} ({isHighSeason ? 'Tarifa Temporada Alta' : 'Tarifa Temporada Baja'})
             </div>
 
             <div className="public-form-group" style={{ marginTop: '1.2rem' }}>
