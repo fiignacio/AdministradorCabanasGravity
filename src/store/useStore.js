@@ -2,15 +2,23 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { createClient } from '@supabase/supabase-js';
 
-// Helper function to get supabase instance if configured
+let cachedSupabaseClient = null;
+let cachedKey = null;
+
+// Helper function to get supabase instance (singleton pattern)
 export const getSupabase = (config) => {
   const url = import.meta.env.VITE_SUPABASE_URL || config?.supabaseUrl;
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY || config?.supabaseKey;
-  if (url && key) {
-    return createClient(url, key);
+  if (!url || !key) return null;
+
+  const cacheId = `${url}::${key}`;
+  if (!cachedSupabaseClient || cachedKey !== cacheId) {
+    cachedSupabaseClient = createClient(url, key);
+    cachedKey = cacheId;
   }
-  return null;
+  return cachedSupabaseClient;
 };
+
 
 export const useStore = create(
   persist(
@@ -474,19 +482,22 @@ export const useStore = create(
           set({ carReservations: carResData });
         }
 
-        // Fetch Tours
+        // Fetch Tours (opcional)
         const { data: toursData, error: toursError } = await sb.from('tours').select('*');
-        if (toursError) console.error("Error tours:", toursError);
-        else if (toursData) {
+        if (toursError && toursError.code !== 'PGRST205' && toursError.code !== '42P01') {
+          console.warn("Info tours:", toursError.message);
+        } else if (toursData) {
           set({ tours: toursData });
         }
 
-        // Fetch Tour Reservations
+        // Fetch Tour Reservations (opcional)
         const { data: tourResData, error: tourResError } = await sb.from('tour_reservations').select('*');
-        if (tourResError) console.error("Error tour reservations:", tourResError);
-        else if (tourResData) {
+        if (tourResError && tourResError.code !== 'PGRST205' && tourResError.code !== '42P01') {
+          console.warn("Info tour reservations:", tourResError.message);
+        } else if (tourResData) {
           set({ tourReservations: tourResData });
         }
+
 
         // Fetch Referrers
         const { data: refData, error: refError } = await sb.from('referrers').select('*');
