@@ -1,0 +1,19 @@
+{
+  "name": "@cabanas/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./supabase": "./src/supabaseClient.js",
+    "./defaults": "./src/defaults.js",
+    "./dateUtils": "./src/dateUtils.js",
+    "./pricing": "./src/pricing.js",
+    "./whatsapp": "./src/whatsapp.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.2",
+    "date-fns": "^4.3.0"
+  }
+}
