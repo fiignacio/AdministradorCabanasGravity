@@ -78,7 +78,9 @@ body {
 .app-container {
   display: flex;
   height: 100vh;
-  width: 100vw;
+  height: 100dvh;
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   position: relative;
 }
@@ -86,16 +88,50 @@ body {
 .mobile-topbar {
   display: none;
   align-items: center;
-  gap: 1rem;
-  padding: 0.85rem 1.25rem;
-  z-index: 100;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  z-index: 150;
+  flex-shrink: 0;
+  width: 100%;
   border-radius: 0;
   border-left: none;
   border-right: none;
   border-top: none;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.mobile-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.mobile-topbar-brand h2 {
+  font-size: 1rem;
+  margin: 0;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-notif-dropdown {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 380px;
+  max-width: calc(100vw - 1.5rem);
+  max-height: 520px;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05);
+  z-index: 99999;
+  padding: 1.25rem;
 }
 
 .desktop-header-bar {
@@ -133,11 +169,14 @@ body {
 
 .main-content {
   flex: 1;
+  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   padding: 2rem;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Base Responsive Grid Helper */
@@ -415,8 +454,9 @@ h3 {
     position: fixed;
     top: 0;
     left: -320px;
-    width: 290px;
+    width: min(290px, 86vw);
     height: 100vh;
+    height: 100dvh;
     z-index: 300;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -449,12 +489,19 @@ h3 {
     padding: 1rem 0.75rem;
   }
 
+  .card {
+    padding: 1.15rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+
   h1 {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
+    line-height: 1.25;
   }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.12rem;
   }
 
   /* Page Header Mobile Flex Stack */
@@ -480,7 +527,7 @@ h3 {
   .modal-content {
     padding: 1.25rem;
     border-radius: 16px;
-    max-height: 94vh;
+    max-height: 92dvh;
   }
 
   .modal-footer {
@@ -494,26 +541,34 @@ h3 {
   }
 
   /* Dropdown Notifications Panel on Mobile */
-  div[style*="top: 48px"] {
-    width: calc(100vw - 2rem) !important;
-    right: -10px !important;
-    max-height: 75vh !important;
+  .admin-notif-dropdown {
+    position: fixed;
+    top: 62px;
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    max-width: none;
+    max-height: 75dvh;
+    padding: 1rem;
   }
 }
 
 /* ----------------------------------------------------
    OPTIMIZACIÓN RESPONSIVA MÓVIL (TODAS LAS PESTAÑAS)
 ------------------------------------------------------ */
-.table-responsive {
+.table-responsive,
+.table-responsive-wrapper {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   border-radius: var(--radius-md);
 }
 
-.table-responsive table {
-  min-width: 600px;
+.table-responsive table,
+.table-responsive-wrapper table {
+  min-width: 560px;
 }
 
 @media (max-width: 600px) {
@@ -522,12 +577,21 @@ h3 {
   }
 
   .main-content {
-    padding: 0.75rem 0.5rem !important;
+    padding: 0.75rem 0.6rem !important;
+  }
+
+  .card {
+    padding: 1rem !important;
+    border-radius: 16px;
   }
 
   .form-input, .form-select, .btn {
     min-height: 44px;
     font-size: 0.95rem;
+  }
+
+  .btn {
+    padding: 0.65rem 1rem;
   }
 
   .grid-2, .grid-3, .grid-4 {
@@ -542,6 +606,6 @@ h3 {
   .modal-content {
     padding: 1rem !important;
     border-radius: 16px !important;
-    max-height: 96vh !important;
+    max-height: 94dvh !important;
   }
 }

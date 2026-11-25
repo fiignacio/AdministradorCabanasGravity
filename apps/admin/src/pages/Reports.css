@@ -1,17 +1,42 @@
 .reports-page {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.5rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .filter-section {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.1rem;
   background: #ffffff;
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--radius-lg);
   border: 1px solid #e2e8f0;
+  min-width: 0;
+}
+
+.reports-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .reports-page {
+    gap: 1rem;
+  }
+
+  .filter-controls > .form-group {
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
+    margin-bottom: 0.5rem;
+  }
+
+  .report-results {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .filter-header {

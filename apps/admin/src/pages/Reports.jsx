@@ -203,7 +203,7 @@ const Reports = () => {
       </div>
 
       {/* Tarjetas de Resumen Consolidado */}
-      <div className="report-results" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="report-results" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         <div className="stat-card glass-panel" style={{ borderLeft: '4px solid #556B2F' }}>
           <div className="stat-icon" style={{ color: '#556B2F', background: 'rgba(85,107,47,0.1)' }}><Home size={24} /></div>
           <div className="stat-info">
@@ -263,7 +263,7 @@ const Reports = () => {
 
         {/* 1. SECCIÓN CABAÑAS */}
         <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ color: '#2c4c3b', borderBottom: '1px solid #cbd5e1', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
+          <h3 style={{ color: '#2c4c3b', borderBottom: '1px solid #cbd5e1', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
             <span>🏠 Estadías y Reservas de Cabañas</span>
             <span style={{ fontSize: '0.9rem', color: '#556B2F' }}>Subtotal: ${totalIncome.toLocaleString('es-CL')} ({filteredReservations.length} estadías)</span>
           </h3>

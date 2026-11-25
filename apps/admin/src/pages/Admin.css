@@ -1,13 +1,15 @@
 .admin-page {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.5rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .admin-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 1.25rem;
 }
 
 .admin-section {
@@ -17,14 +19,42 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-lg);
-  padding: 1.75rem;
+  padding: 1.5rem;
   box-shadow: var(--glass-shadow);
+  min-width: 0;
 }
 
 .section-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.public-link-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.public-link-row .form-input {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.discount-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .prices-form {
@@ -34,7 +64,7 @@
 }
 
 .save-msg {
-  margin-left: 1rem;
+  margin-left: 0.5rem;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--success);
@@ -44,4 +74,35 @@
 .btn-sm {
   padding: 0.55rem 1.1rem;
   font-size: 0.88rem;
+}
+
+@media (max-width: 768px) {
+  .admin-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  .admin-section {
+    padding: 1rem;
+  }
+
+  .section-header-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .months-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .discount-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .public-link-row .btn {
+    flex: 1 1 110px;
+    justify-content: center;
+  }
 }

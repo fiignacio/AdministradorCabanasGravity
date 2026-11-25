@@ -216,7 +216,7 @@ const Reservations = () => {
     <div className="reservations-page">
       <div className="page-header">
         <h1>{showArchived ? 'Historial de Reservas (Archivadas)' : 'Gestión de Reservas'}</h1>
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        <div className="reservations-header-actions">
           <button className={`btn ${showArchived ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setShowArchived(!showArchived)}>
             {showArchived ? <ArchiveRestore size={20} /> : <Archive size={20} />}
             {showArchived ? 'Ver Activas' : 'Ver Historial'}
@@ -239,31 +239,30 @@ const Reservations = () => {
         </div>
       </div>
 
-      <div className="card glass-panel" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '0.5rem 1rem', flex: '1', minWidth: '250px', border: '1px solid var(--glass-border)' }}>
-          <Search size={20} color="var(--text-secondary)" style={{ marginRight: '10px' }} />
+      <div className="card glass-panel reservations-toolbar">
+        <div className="reservations-search-box">
+          <Search size={20} color="var(--text-secondary)" style={{ marginRight: '10px', flexShrink: 0 }} />
           <input 
             type="text" 
             placeholder="Buscar por cliente o cabaña..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%' }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%', minWidth: 0 }}
           />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <label style={{ color: 'var(--text-secondary)' }}>Llegada:</label>
+        <div className="reservations-filter-controls">
+          <label style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 600 }}>Llegada:</label>
           <input 
             type="date" 
             className="form-input" 
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
-            style={{ width: 'auto', padding: '0.5rem' }}
           />
           <select 
             className="form-input" 
             value={sortOrder} 
             onChange={(e) => setSortOrder(e.target.value)}
-            style={{ padding: '0.5rem', width: 'auto', cursor: 'pointer' }}
+            style={{ cursor: 'pointer' }}
           >
             <option value="asc">Orden: Próximas primero</option>
             <option value="desc">Orden: Más lejanas primero</option>

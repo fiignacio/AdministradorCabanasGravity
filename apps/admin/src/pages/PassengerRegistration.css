@@ -2,17 +2,71 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
-  gap: 2rem;
+  gap: 1.5rem;
+}
+
+.passenger-page .left-panel,
+.passenger-page .right-panel {
+  min-width: 0;
+}
+
+.travel-details-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.passenger-input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.passenger-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.passenger-actions-row .btn {
+  flex: 1 1 160px;
+  justify-content: center;
 }
 
 @media (max-width: 1024px) {
   .content-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .travel-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .passenger-input-row {
+    flex-wrap: wrap;
+    background: #f8fafc;
+    padding: 0.6rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .passenger-input-row > div:first-child {
+    flex: 1 1 100% !important;
+  }
+
+  .passenger-input-row > div:nth-child(2) {
+    flex: 1 1 140px !important;
   }
 }
 
@@ -185,12 +239,26 @@
   .invoice-header {
     flex-direction: column;
     text-align: center;
-    gap: 1.5rem;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+  .invoice-brand {
+    flex-direction: column;
+    gap: 0.5rem;
   }
   .invoice-header-right {
     text-align: center;
   }
+  .invoice-body {
+    padding: 1rem;
+  }
   .invoice-detail-grid {
     grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  .invoice-table th,
+  .invoice-table td {
+    padding: 0.6rem 0.65rem;
+    font-size: 0.85rem;
   }
 }

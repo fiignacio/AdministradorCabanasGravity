@@ -106,8 +106,8 @@ const Dashboard = () => {
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ textAlign: 'right', marginRight: '0.5rem' }}>
+                  <div className="pending-request-actions">
+                    <div style={{ textAlign: 'right', marginRight: '0.25rem' }}>
                       <div style={{ fontWeight: 'bold', color: '#16a34a', fontSize: '1.05rem' }}>${Number(req.totalCost || 0).toLocaleString('es-CL')}</div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Abono 50%: ${Number(req.depositAmount || 0).toLocaleString('es-CL')}</div>
                     </div>
@@ -133,7 +133,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+      <div className="stats-grid">
         
         <div className="stat-card glass-panel" style={{ borderLeft: '4px solid var(--accent-secondary)' }}>
           <div className="stat-info">
@@ -165,7 +165,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="dashboard-content" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))' }}>
+      <div className="dashboard-content">
         {/* Arrivals Today */}
         <div className="card glass-panel upcoming-section">
           <h2 style={{ color: 'var(--success)' }}>Llegadas HOY</h2>

@@ -500,13 +500,13 @@ export default function QuoteGenerator() {
           </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
-            <button className="btn btn-secondary" style={{ flex: 1 }} onClick={handleExportPDF} disabled={isExporting}>
+          <div className="quote-actions-row">
+            <button className="btn btn-secondary" onClick={handleExportPDF} disabled={isExporting}>
               <Download size={20} /> Exportar PDF
             </button>
             <button 
               className="btn btn-primary" 
-              style={{ flex: 1, backgroundColor: '#25D366', borderColor: '#25D366', color: 'white', opacity: isUploading ? 0.7 : 1 }} 
+              style={{ backgroundColor: '#25D366', borderColor: '#25D366', color: 'white', opacity: isUploading ? 0.7 : 1 }} 
               onClick={handleWhatsAppQuote}
               disabled={isUploading}
             >

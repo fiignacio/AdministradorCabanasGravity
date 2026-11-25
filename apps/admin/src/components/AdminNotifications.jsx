@@ -85,21 +85,7 @@ export default function AdminNotifications() {
         </button>
 
         {isOpen && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '48px',
-              right: 0,
-              width: '380px',
-              maxHeight: '520px',
-              overflowY: 'auto',
-              background: '#ffffff',
-              borderRadius: '16px',
-              boxShadow: '0 20px 40px -10px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05)',
-              zIndex: 99999,
-              padding: '1.25rem'
-            }}
-          >
+          <div className="admin-notif-dropdown">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Bell size={18} color="var(--accent-primary)" />

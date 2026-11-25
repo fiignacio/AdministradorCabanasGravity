@@ -24,11 +24,11 @@ const Layout = () => {
 
       {/* Mobile Top Bar */}
       <div className="mobile-topbar glass-panel" style={{ justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button className="btn-icon" onClick={() => setSidebarOpen(true)}>
+        <div className="mobile-topbar-brand">
+          <button className="btn-icon" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú">
             <Menu size={24} color="var(--text-primary)" />
           </button>
-          <h2 style={{ fontSize: '1rem', margin: 0, color: 'var(--text-primary)' }}>
+          <h2>
             {businessConfig?.businessName || 'Panel de Administración'}
           </h2>
         </div>

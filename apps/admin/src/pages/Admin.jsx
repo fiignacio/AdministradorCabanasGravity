@@ -213,7 +213,7 @@ const Admin = () => {
         </button>
       </div>
 
-      <div className="admin-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}>
+      <div className="admin-grid">
         {/* 1. Panel de Identidad y Marca */}
         <div className="card glass-panel admin-section" style={{ gridColumn: 'span 1' }}>
           <h2><Building2 size={22} style={{ display: 'inline', marginRight: 8, color: brandForm.primaryColor }} /> Marca y Administración</h2>
@@ -332,7 +332,7 @@ const Admin = () => {
             <p className="text-secondary" style={{ fontSize: '0.82rem', margin: '0 0 0.8rem 0' }}>
               Comparte este enlace por WhatsApp o Redes Sociales para que tus clientes miren disponibilidad y coticen directamente.
             </p>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="public-link-row">
               <input 
                 type="text" 
                 readOnly 
@@ -377,7 +377,7 @@ const Admin = () => {
                 Haz clic en los meses para activarlos o desactivarlos como Temporada Alta. Los meses no seleccionados serán automáticamente Temporada Baja.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '8px' }}>
+              <div className="months-grid">
                 {MONTHS.map(m => {
                   const isHigh = seasonForm.highSeasonMonths.includes(m.id);
                   return (
@@ -459,7 +459,7 @@ const Admin = () => {
               </label>
 
               {discountForm.enableGroupDiscount && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                <div className="discount-grid">
                   <div className="form-group" style={{ margin: 0 }}>
                     <label className="form-label" style={{ fontSize: '0.8rem' }}>Mínimo de Personas</label>
                     <input 
@@ -497,7 +497,7 @@ const Admin = () => {
               </label>
 
               {discountForm.enableDurationDiscount && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                <div className="discount-grid">
                   <div className="form-group" style={{ margin: 0 }}>
                     <label className="form-label" style={{ fontSize: '0.8rem' }}>Mínimo de Noches</label>
                     <input 

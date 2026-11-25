@@ -1006,9 +1006,9 @@ export default function PublicAvailability() {
             borderRadius: '20px',
             maxWidth: '520px',
             width: '100%',
-            maxHeight: '90vh',
+            maxHeight: '92dvh',
             overflowY: 'auto',
-            padding: '2rem',
+            padding: 'clamp(1rem, 4vw, 2rem)',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
             color: '#1e293b'
           }}>

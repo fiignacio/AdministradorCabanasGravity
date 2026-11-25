@@ -273,7 +273,7 @@ export default function PassengerRegistration() {
           <div className="card glass-panel" style={{ marginBottom: '2rem' }}>
             <h2><Plane size={20} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }}/> Detalles del Viaje</h2>
             
-            <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+            <div className="travel-details-grid">
               <div className="form-group">
                 <label className="form-label">Titular de la Reserva</label>
                 <input type="text" className="form-input" value={titular} onChange={e => setTitular(e.target.value)} placeholder="Ej: Juan Pérez" />
@@ -339,7 +339,7 @@ export default function PassengerRegistration() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {passengers.map((p, index) => (
-                  <div key={index} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <div key={index} className="passenger-input-row">
                     <div style={{ flex: 2 }}>
                       <input 
                         type="text" 
@@ -427,6 +427,7 @@ export default function PassengerRegistration() {
 
                 <div className="invoice-section">
                   <div className="invoice-section-title">LISTA DE PASAJEROS ({passengers.length})</div>
+                  <div style={{ width: '100%', overflowX: 'auto' }}>
                   <table className="invoice-table">
                     <thead>
                       <tr>
@@ -453,6 +454,7 @@ export default function PassengerRegistration() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
 
@@ -465,8 +467,8 @@ export default function PassengerRegistration() {
               </div>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1rem', width: '100%' }}>
-            <button className="btn btn-secondary" style={{ flex: 1 }} onClick={handleExportPDF} disabled={isExporting}>
+          <div className="passenger-actions-row">
+            <button className="btn btn-secondary" onClick={handleExportPDF} disabled={isExporting}>
               <Download size={20} /> Guardar
             </button>
             <button 

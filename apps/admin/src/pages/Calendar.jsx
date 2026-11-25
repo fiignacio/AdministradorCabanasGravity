@@ -420,7 +420,8 @@ const Calendar = () => {
           style={{
             position: 'fixed',
             top: `${Math.max(10, popover.y - 130)}px`,
-            left: `${popover.x}px`,
+            left: `${Math.min(Math.max(120, popover.x), window.innerWidth - 120)}px`,
+            maxWidth: 'calc(100vw - 1.5rem)',
             transform: 'translateX(-50%)',
             zIndex: 999999,
             padding: '1rem',
