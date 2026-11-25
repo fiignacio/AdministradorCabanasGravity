@@ -180,6 +180,7 @@ export default function QuoteGenerator() {
   };
 
   const handleStartDateChange = (e) => {
+    if (!e.target.value) return;
     const date = new Date(e.target.value + 'T12:00:00');
     setStartDate(date);
     if (date >= endDate) {
@@ -188,6 +189,7 @@ export default function QuoteGenerator() {
   };
 
   const handleEndDateChange = (e) => {
+    if (!e.target.value) return;
     const date = new Date(e.target.value + 'T12:00:00');
     if (date > startDate) {
       setEndDate(date);
@@ -285,6 +287,7 @@ export default function QuoteGenerator() {
                     type="date" 
                     className="form-input"
                     value={format(endDate, 'yyyy-MM-dd')}
+                    min={format(addDays(startDate, 1), 'yyyy-MM-dd')}
                     onChange={handleEndDateChange}
                   />
                 </div>

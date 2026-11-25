@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, Lock, FileText } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { calculateReservationCost } from '../utils/pricing';
-import { parseSafeDate } from '../utils/dateUtils';
+import { parseSafeDate, getNextDayStr } from '../utils/dateUtils';
 import './ReservationModal.css';
 
 const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) => {
@@ -349,10 +349,21 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
-    }));
+    const nextVal = type === 'checkbox' ? checked : value;
+
+    setFormData(prev => {
+      const updated = { ...prev, [name]: nextVal };
+
+      if (name === 'startDate' && nextVal) {
+        // Si la salida está vacía o es anterior/igual a la nueva llegada,
+        // ajustarla al día siguiente para mantener coherencia y mismo mes.
+        if (!prev.endDate || prev.endDate <= nextVal) {
+          updated.endDate = getNextDayStr(nextVal);
+        }
+      }
+
+      return updated;
+    });
   };
 
   const getSeason = (dateString) => {
@@ -409,6 +420,7 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
                 name="endDate" 
                 className="form-input" 
                 value={formData.endDate} 
+                min={formData.startDate ? getNextDayStr(formData.startDate) : undefined}
                 onChange={handleChange} 
                 required 
               />
@@ -740,7 +752,17 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
                             type="date" 
                             className="form-input" 
                             value={carData.startDate} 
-                            onChange={e => setCarData(prev => ({ ...prev, startDate: e.target.value, carTotalCost: 0 }))}
+                            onChange={e => {
+                              const newStart = e.target.value;
+                              setCarData(prev => {
+                                let nextEnd = prev.endDate;
+                                if (newStart && (!nextEnd || nextEnd <= newStart)) {
+                                  const suggestedEnd = getNextDayStr(newStart);
+                                  nextEnd = formData.endDate && suggestedEnd > formData.endDate ? formData.endDate : suggestedEnd;
+                                }
+                                return { ...prev, startDate: newStart, endDate: nextEnd, carTotalCost: 0 };
+                              });
+                            }}
                             min={formData.startDate}
                             max={formData.endDate}
                             required={!carData.isFullStay}
@@ -753,7 +775,7 @@ const ReservationModal = ({ isOpen, onClose, reservationToEdit, initialData }) =
                             className="form-input" 
                             value={carData.endDate} 
                             onChange={e => setCarData(prev => ({ ...prev, endDate: e.target.value, carTotalCost: 0 }))}
-                            min={formData.startDate}
+                            min={carData.startDate ? getNextDayStr(carData.startDate) : formData.startDate}
                             max={formData.endDate}
                             required={!carData.isFullStay}
                           />

@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useStore, getSupabase } from '../store/useStore';
 import { generateWhatsAppLink, generateInvitationMessage } from '../utils/whatsapp';
-import { formatSafeDate } from '../utils/dateUtils';
+import { formatSafeDate, getNextDayStr } from '../utils/dateUtils';
 import './PassengerRegistration.css';
 
 export default function PassengerRegistration() {
@@ -284,11 +284,28 @@ export default function PassengerRegistration() {
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha Ida (Check-in)</label>
-                <input type="date" className="form-input" value={checkIn} onChange={e => setCheckIn(e.target.value)} />
+                <input
+                  type="date"
+                  className="form-input"
+                  value={checkIn}
+                  onChange={e => {
+                    const newIn = e.target.value;
+                    setCheckIn(newIn);
+                    if (newIn && (!checkOut || checkOut <= newIn)) {
+                      setCheckOut(getNextDayStr(newIn));
+                    }
+                  }}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha Vuelta (Check-out)</label>
-                <input type="date" className="form-input" value={checkOut} onChange={e => setCheckOut(e.target.value)} />
+                <input
+                  type="date"
+                  className="form-input"
+                  value={checkOut}
+                  min={checkIn ? getNextDayStr(checkIn) : undefined}
+                  onChange={e => setCheckOut(e.target.value)}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label"><PlaneLanding size={16} style={{ display: 'inline' }}/> Vuelo Llegada (Ida)</label>

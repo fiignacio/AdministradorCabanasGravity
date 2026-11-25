@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 /**
@@ -36,4 +36,13 @@ export const parseSafeDate = (dateVal) => {
 export const formatSafeDate = (dateVal, formatStr = 'dd MMM yyyy') => {
   const safe = parseSafeDate(dateVal);
   return format(safe, formatStr, { locale: es });
+};
+
+/**
+ * Returns YYYY-MM-DD for the day immediately after dateVal without timezone shift.
+ */
+export const getNextDayStr = (dateVal) => {
+  if (!dateVal) return '';
+  const safe = parseSafeDate(dateVal);
+  return format(addDays(safe, 1), 'yyyy-MM-dd');
 };

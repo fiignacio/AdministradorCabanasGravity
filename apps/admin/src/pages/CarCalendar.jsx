@@ -15,7 +15,7 @@ import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, X, MessageCircle } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import WhatsAppModal from '../components/WhatsAppModal';
-import { parseSafeDate, formatSafeDate } from '../utils/dateUtils';
+import { parseSafeDate, formatSafeDate, getNextDayStr } from '../utils/dateUtils';
 import './Calendar.css';
 
 const CarCalendar = () => {
@@ -545,11 +545,33 @@ const CarCalendar = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Fecha Retiro</label>
-                  <input type="date" className="form-input" required value={resForm.startDate} onChange={e => setResForm({...resForm, startDate: e.target.value})} />
+                  <input
+                    type="date"
+                    className="form-input"
+                    required
+                    value={resForm.startDate}
+                    onChange={e => {
+                      const newStart = e.target.value;
+                      setResForm(prev => ({
+                        ...prev,
+                        startDate: newStart,
+                        endDate: newStart && (!prev.endDate || prev.endDate <= newStart)
+                          ? getNextDayStr(newStart)
+                          : prev.endDate
+                      }));
+                    }}
+                  />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Fecha Devolución</label>
-                  <input type="date" className="form-input" required value={resForm.endDate} onChange={e => setResForm({...resForm, endDate: e.target.value})} />
+                  <input
+                    type="date"
+                    className="form-input"
+                    required
+                    value={resForm.endDate}
+                    min={resForm.startDate ? getNextDayStr(resForm.startDate) : undefined}
+                    onChange={e => setResForm({ ...resForm, endDate: e.target.value })}
+                  />
                 </div>
               </div>
 
