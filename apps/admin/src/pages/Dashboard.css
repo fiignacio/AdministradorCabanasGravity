@@ -141,10 +141,24 @@
   }
 
   .stat-value {
-    font-size: 1.35rem;
+    font-size: 1.2rem;
   }
 
   .stat-label {
+    font-size: 0.74rem;
+  }
+
+  .upcoming-section h2 {
+    font-size: 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .upcoming-details strong {
+    font-size: 0.88rem;
+  }
+
+  .upcoming-details span,
+  .upcoming-date {
     font-size: 0.78rem;
   }
 

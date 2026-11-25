@@ -313,8 +313,8 @@
 
   .calendar-header-actions button.btn-primary {
     width: 100%;
-    padding: 0.75rem;
-    font-size: 0.95rem;
+    padding: 0.62rem;
+    font-size: 0.88rem;
     display: flex;
     justify-content: center;
   }
@@ -336,22 +336,22 @@
 
   .current-month {
     min-width: auto;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
   }
 
   .cabin-name-cell:not(.collapsed), .cabin-name-header:not(.collapsed) {
-    min-width: 130px;
-    max-width: 130px;
-    padding: 0.5rem;
-    gap: 6px;
+    min-width: 118px;
+    max-width: 118px;
+    padding: 0.45rem;
+    gap: 5px;
   }
 
   .cabin-name-header {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
   }
 
   .cabin-name-cell strong {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     white-space: normal;
     word-break: normal;
     line-height: 1.2;

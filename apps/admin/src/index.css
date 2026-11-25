@@ -437,6 +437,10 @@ h3 {
 }
 
 @media (max-width: 768px) {
+  html {
+    font-size: 14.5px;
+  }
+
   .app-container {
     flex-direction: column;
   }
@@ -496,12 +500,29 @@ h3 {
   }
 
   h1 {
-    font-size: 1.35rem;
+    font-size: 1.22rem;
     line-height: 1.25;
   }
 
   h2 {
-    font-size: 1.12rem;
+    font-size: 1.02rem;
+  }
+
+  h3 {
+    font-size: 0.94rem;
+  }
+
+  .text-secondary {
+    font-size: 0.85rem;
+  }
+
+  .form-label {
+    font-size: 0.8rem;
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    padding: 0.24rem 0.6rem;
   }
 
   /* Page Header Mobile Flex Stack */
@@ -572,26 +593,44 @@ h3 {
 }
 
 @media (max-width: 600px) {
+  html {
+    font-size: 13.5px;
+  }
+
   body, .app-container, .main-content {
     overflow-x: hidden;
   }
 
   .main-content {
-    padding: 0.75rem 0.6rem !important;
+    padding: 0.7rem 0.55rem !important;
   }
 
   .card {
-    padding: 1rem !important;
-    border-radius: 16px;
+    padding: 0.9rem !important;
+    border-radius: 14px;
   }
 
-  .form-input, .form-select, .btn {
-    min-height: 44px;
+  .mobile-topbar-brand h2 {
     font-size: 0.95rem;
   }
 
+  .form-input, .form-select, .btn {
+    min-height: 40px;
+    font-size: 0.86rem;
+  }
+
   .btn {
-    padding: 0.65rem 1rem;
+    padding: 0.55rem 0.9rem;
+  }
+
+  .reservations-table th {
+    font-size: 0.68rem;
+    padding: 0.65rem 0.5rem;
+  }
+
+  .reservations-table td {
+    font-size: 0.78rem;
+    padding: 0.65rem 0.5rem;
   }
 
   .grid-2, .grid-3, .grid-4 {

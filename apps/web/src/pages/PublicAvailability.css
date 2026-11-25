@@ -1060,12 +1060,22 @@
   }
 
   .hero-section {
-    padding: 2rem 1.25rem;
-    min-height: 400px;
+    padding: 1.65rem 1.1rem;
+    min-height: 360px;
   }
 
   .hero-title {
-    font-size: 1.85rem;
+    font-size: 1.55rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .hero-feature-pill {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.7rem;
   }
 }
 
@@ -1204,7 +1214,33 @@
   }
 
   .section-title {
-    font-size: 1.45rem;
+    font-size: 1.28rem;
+  }
+
+  .section-desc {
+    font-size: 0.86rem;
+  }
+
+  .cabin-card-name {
+    font-size: 1.1rem;
+  }
+
+  .summary-total-price {
+    font-size: 1.6rem;
+  }
+
+  .btn-whatsapp-reserve {
+    font-size: 0.94rem;
+    padding: 0.85rem;
+  }
+
+  .public-input {
+    font-size: 0.88rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .public-label {
+    font-size: 0.8rem;
   }
 
   .info-card,
