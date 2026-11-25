@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { Settings, Save, Building2, Palette, RefreshCw, Upload, Image as ImageIcon, Trash2, Plus, Edit2, X, Share2, Copy, ExternalLink, Check, Calendar, Sun, CloudSun, Tag, Percent, Users as UsersIcon } from 'lucide-react';
 import { MONTHS, getHighSeasonText, getLowSeasonText } from '../utils/pricing';
+import { getPublicSiteUrl } from '../config/publicUrl';
 import './Admin.css';
 
-const PUBLIC_SITE_URL = import.meta.env.VITE_PUBLIC_SITE_URL || 'http://localhost:5173';
+const PUBLIC_SITE_URL = getPublicSiteUrl();
 
 const THEME_PRESETS = [
   { id: 'green', name: 'Verde Bosque', color: '#2c4c3b' },

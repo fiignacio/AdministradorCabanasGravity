@@ -19,9 +19,10 @@ import {
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { FEATURES } from '../config/features';
+import { getPublicSiteUrl } from '../config/publicUrl';
 import './Sidebar.css';
 
-const PUBLIC_SITE_URL = import.meta.env.VITE_PUBLIC_SITE_URL || 'http://localhost:5173';
+const PUBLIC_SITE_URL = getPublicSiteUrl();
 
 const Sidebar = ({ onClose }) => {
   const { offlineQueue, businessConfig, logout } = useStore();
