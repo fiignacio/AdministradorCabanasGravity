@@ -1,94 +1,151 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap');
-
 :root {
-  --bg-primary: #F8FAFC;
-  --bg-secondary: #F1F5F9;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --accent-primary: #8C5A32;
-  --primary-color: #8C5A32;
-  --accent-secondary: #0D9488;
-  --border-color: #E2E8F0;
-  --success: #16A34A;
-  --warning: #EA580C;
-  --danger: #DC2626;
+  color-scheme: light;
 
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(226, 232, 240, 0.8);
-  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
-  --glass-shadow-hover: 0 20px 35px -5px rgba(15, 23, 42, 0.1), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
+  /* Paleta editorial volcánica de Rapa Nui (contrastes >= 4.5:1 verificados) */
+  --surface-ground: #F7F3EC;
+  --surface-band: #EFE8DC;
+  --surface-card: #FFFDF9;
+  --surface-ink: #1D1916;
+  --surface-ink-muted: #2B2420;
 
-  --font-main: 'Plus Jakarta Sans', 'Outfit', sans-serif;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --ink-primary: #1D1916;
+  --ink-secondary: #524941;
+  --ink-on-dark: #F7F3EC;
+  --ink-on-dark-muted: #D8CFC2;
+
+  /* Acento principal (puede personalizarse vía app_settings manteniendo fallback accesible) */
+  --accent-primary: #8F3A26;
+  --primary-color: #8F3A26;
+  --accent-hover: #732C1C;
+  --accent-soft: #F3E4DE;
+
+  /* Acento botánico (disponibilidad / confirmación) */
+  --botanical: #285443;
+  --botanical-soft: #E5F0EB;
+  --danger: #A62626;
+  --danger-soft: #FBEAEA;
+  --warning-ink: #7C440C;
+  --warning-soft: #FDF3E3;
+
+  /* Bordes táctiles (contraste >= 3:1 en controles) */
+  --line-subtle: #DFD6C7;
+  --line-control: #8F8272;
+
+  /* Tipografía editorial */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Radios y espaciado */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --space-gutter: clamp(1rem, 3vw, 2.25rem);
+  --max-width: 76rem;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
+  container-type: scroll-state;
   scroll-behavior: smooth;
 }
 
-@media (max-width: 768px) {
+@media (prefers-reduced-motion: reduce) {
   html {
-    font-size: 14.5px;
-  }
-}
-
-@media (max-width: 600px) {
-  html {
-    font-size: 13.5px;
+    scroll-behavior: auto;
   }
 }
 
 body {
-  font-family: var(--font-main);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.5;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-align: start;
+  color: var(--ink-primary);
+  background-color: var(--surface-ground);
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--glass-shadow);
-  transition: var(--transition);
+img,
+svg {
+  display: block;
+  max-inline-size: 100%;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.4rem;
-  font-family: var(--font-main);
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  color: var(--ink-primary);
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+/* Utilidad accesible estándar (WCAG / modern-web-guidance) */
+.visually-hidden:where(:not(:focus-within, :active)) {
+  position: absolute !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
+.skip-link {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 9999;
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-ink);
+  color: var(--ink-on-dark);
   font-weight: 600;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 0.95rem;
   text-decoration: none;
+  border: 2px solid var(--surface-ground);
 }
 
-.btn-primary {
-  background: var(--accent-primary);
-  color: #ffffff;
+/* Indicador de foco de alto contraste para teclado */
+:where(a:any-link, button, summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.06);
+:target,
+section[id],
+footer[id] {
+  scroll-margin-block-start: 5.5rem;
+}
+
+@media (forced-colors: active) {
+  :where(a:any-link, button, summary, input, select, textarea):focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+  }
 }
